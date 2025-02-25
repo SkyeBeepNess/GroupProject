@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" 
+            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="university.management.ApplicantController">
+   <children>
+      <Label layoutX="207.0" layoutY="14.0" text="Applicant Dashboard">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <TableView fx:id="applicantTable" layoutX="50.0" layoutY="55.0" prefHeight="100.0" prefWidth="500.0">
+        <columns>
+          <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Name" />
+          <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Date" />
+          <TableColumn fx:id="certificateColumn" prefWidth="100.0" text="Certificate" />
+          <TableColumn fx:id="gradeColumn" prefWidth="75.0" text="Grade" />
+          <TableColumn fx:id="statusColumn" prefWidth="75.0" text="Status" /> <!-- Добавлен статус -->
+        </columns>
+      </TableView>
+      <Button fx:id="uploadButton" layoutX="243.0" layoutY="174.0" mnemonicParsing="false" onAction="#uploadFile" text="Upload Document" />
+      <Button fx:id="exitButton" layoutX="282.0" layoutY="214.0" mnemonicParsing="false" onAction="#exitApplication" text="Exit" />
+   </children>
+</AnchorPane>

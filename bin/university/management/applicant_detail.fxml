@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" 
+            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="university.management.ApplicantDetailController"> <!-- Здесь была ошибка -->
+   <children>
+      <Label layoutX="255.0" layoutY="26.0" text="Applicant Details" />
+      
+      <Label layoutX="53.0" layoutY="62.0" text="Name:" />
+      <Label fx:id="nameLabel" layoutX="180.0" layoutY="62.0" text="" />
+
+      <Label layoutX="53.0" layoutY="86.0" text="Date of Application:" />
+      <Label fx:id="dateLabel" layoutX="180.0" layoutY="86.0" text="" />
+
+      <Label layoutX="53.0" layoutY="110.0" text="Certificate:" />
+      <Label fx:id="certificateLabel" layoutX="180.0" layoutY="110.0" text="" />
+
+      <Label layoutX="53.0" layoutY="134.0" text="Grade:" />
+      <Label fx:id="gradeLabel" layoutX="180.0" layoutY="134.0" text="" />
+
+      <Label layoutX="53.0" layoutY="158.0" text="Status:" />
+      <Label fx:id="statusLabel" layoutX="180.0" layoutY="158.0" text="" />
+
+      <Button fx:id="approveButton" layoutX="46.0" layoutY="200.0" mnemonicParsing="false" onAction="#approveApplication" text="Approve" />
+      <Button fx:id="rejectButton" layoutX="133.0" layoutY="200.0" mnemonicParsing="false" onAction="#rejectApplication" text="Reject" />
+   </children>
+</AnchorPane>
