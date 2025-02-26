@@ -30,7 +30,7 @@
                 <graphic>
                     <ImageView fitHeight="50" fitWidth="50" nodeOrientation="INHERIT">
                   <image>
-                     <Image url="img/person.png" />
+                     <Image url="@../img/person.png" />
                   </image></ImageView>
                 </graphic>
             <font>
@@ -41,7 +41,7 @@
                 <graphic>
                     <ImageView fitHeight="50" fitWidth="50">
                   <image>
-                     <Image url="img/book.png" />
+                     <Image url="@../img/book.png" />
                   </image></ImageView>
                 </graphic>
             <font>
@@ -52,7 +52,7 @@
                 <graphic>
                     <ImageView fitHeight="50" fitWidth="50">
                   <image>
-                     <Image url="img/calendar.png" />
+                     <Image url="@../img/calendar.png" />
                   </image></ImageView>
                 </graphic>
             <font>
@@ -63,7 +63,7 @@
                 <graphic>
                     <ImageView fitHeight="50" fitWidth="50">
                   <image>
-                     <Image url="img/bank.png" />
+                     <Image url="@../img/bank.png" />
                   </image></ImageView>
                 </graphic>
             <font>
@@ -74,7 +74,7 @@
                 <graphic>
                     <ImageView fitHeight="50" fitWidth="50">
                   <image>
-                     <Image url="img/restaurant.png" />
+                     <Image url="@../img/restaurant.png" />
                   </image></ImageView>
                 </graphic>
             <font>
@@ -85,7 +85,7 @@
                 <graphic>
                     <ImageView fitHeight="50" fitWidth="50">
                   <image>
-                     <Image url="img/ball.png" />
+                     <Image url="@../img/ball.png" />
                   </image></ImageView>
                 </graphic>
             <font>
