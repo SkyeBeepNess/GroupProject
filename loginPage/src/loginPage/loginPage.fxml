@@ -44,27 +44,44 @@
             </HBox>
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="ID or e-mail">
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="ID or e-mail">
+                           <font>
+                              <Font name="Segoe UI" size="17.0" />
+                           </font>
+                        </Text>
+                        <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
+                           <font>
+                              <Font name="Segoe UI" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </Text>
+                     </children>
+                  </HBox>
+                  <TextField style="-fx-background-color: #ECECEC; -fx-border-color: #888888; -fx-background-radius: 25; -fx-border-radius: 10;" />
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password">
+                           <font>
+                              <Font name="Segoe UI" size="17.0" />
+                           </font>
+                        </Text>
+                        <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
+                           <font>
+                              <Font name="Segoe UI" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </Text>
+                     </children>
                      <VBox.margin>
-                        <Insets />
+                        <Insets top="10.0" />
                      </VBox.margin>
-                     <font>
-                        <Font name="Segoe UI" size="17.0" />
-                     </font>
-                  </Text>
-                  <TextField style="-fx-background-color: #ECECEC; -fx-border-color: #888888; -fx-background-radius: 25; -fx-border-radius: 10;">
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </TextField>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password">
-                     <font>
-                        <Font name="Segoe UI" size="17.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets top="13.0" />
-                     </VBox.margin>
-                  </Text>
+                  </HBox>
                   <TextField style="-fx-background-color: #ECECEC; -fx-border-color: #888888; -fx-background-radius: 25; -fx-border-radius: 10;" />
                   <Hyperlink style="-fx-underline: true;" text="Forgot username or password?" textFill="#65558f">
                      <font>
