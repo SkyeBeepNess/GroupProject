@@ -20,7 +20,6 @@ public class DataBaseHelper {
     }
 	
     public static List<String> getAllCourseIDs() {
-    	System.out.println("test");
         List<String> courseIDs = new ArrayList<>();
         String sql = "SELECT DISTINCT CourseID FROM attendance";
 
@@ -30,7 +29,7 @@ public class DataBaseHelper {
 
             while (rs.next()) {
                 courseIDs.add(rs.getString("CourseID"));
-                System.out.println("test");
+                 
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,17 +39,15 @@ public class DataBaseHelper {
     
     public static List<Student> getStudentsForCourse(String courseID) {
         List<Student> students = new ArrayList<>();
-        String sql = "SELECT StudentID, Attendance FROM Attendance WHERE CourseID = BMS";
+        String sql = "SELECT StudentID FROM Attendance WHERE CourseID = 'BMS'";
 
         try (Connection conn = connect();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, courseID);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 students.add(new Student(
-                        rs.getString("StudentID"),
-                        rs.getString("Attendance")
+                        rs.getString("StudentID")
                 ));
             }
         } catch (Exception e) {

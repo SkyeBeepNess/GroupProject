@@ -3,14 +3,16 @@ package attendancePage;
 public class Student {
 
     private String studentID;
-    private String attendanceStatus;
+    private int attendanceStatus;
 
-    public Student(String studentID, String attendanceStatus) {
+    public Student(String studentID) {
         this.studentID = studentID;
-        this.attendanceStatus = attendanceStatus;
+        this.attendanceStatus = attendancePercentage();
+    }
+    private int attendancePercentage() {
+    	return 100;
     }
 
-
     public String getStudentID() { return studentID; }
-    public String getAttendanceStatus() { return attendanceStatus; }
+    public int getAttendanceStatus() { return attendanceStatus; }
 }
