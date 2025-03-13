@@ -2,14 +2,14 @@ package attendancePage;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ScrollPane;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,34 +17,30 @@ import java.util.List;
 
 
 public class AttendanceController {
-	private boolean filterOpen = false;
-	@FXML
-	private Button homeButton;
-	@FXML
-	protected VBox coursesContainer;
-	@FXML
-	protected ScrollPane scrollablePane;
-	@FXML
-	protected Button filterButton;
-	@FXML
-	protected StackPane filterOverlay;
-	@FXML
-	protected ScrollPane courseIDFilter;
-	
-	@FXML
-	protected ArrayList<CheckBox> checkboxes = new ArrayList<>();
+	@FXML private Button homeButton;
+	@FXML protected VBox coursesContainer;
+	@FXML protected ScrollPane scrollablePane;
+	@FXML protected Button filterButton;
+	@FXML protected StackPane filterOverlay;
+	@FXML protected ScrollPane courseIDFilter;
+	@FXML protected DatePicker startDate;
+	@FXML protected DatePicker endDate;
 	
 	protected List<String> courseIDs;
+	protected ArrayList<CheckBox> checkboxes = new ArrayList<>();
+	private boolean filterOpen = false;
 	
-	@FXML
-	private void loadAllCourses() {
-        List<String> courseIDs = DataBaseHelper.getAllCourseIDs();
-        
-        for (int i = 0; i < 20; i++) {
+	
+	private void loadCourses(ArrayList<String> coursesList, List<LocalDate> dateCouple) {
+		ArrayList<String> courseIDs = new ArrayList<String>(coursesList);
+		
+	    coursesContainer.getChildren().clear();
+		for (int i = 0; i < courseIDs.size(); i++) {
         	TitledPane coursePane = new TitledPane();
         	coursePane.setText("Course ID: " + courseIDs.get(i));
+        	coursePane.setExpanded(false);
         	coursesContainer.getChildren().add(coursePane);
-        	List<Student> students = DataBaseHelper.getStudentsForCourse(courseIDs.get(i));
+        	List<Student> students = DataBaseHelper.getStudentsForCourse(courseIDs.get(i), dateCouple);
         	GridPane studentsGrid = new GridPane();
             studentsGrid.setHgap(75); // Horizontal spacing
             studentsGrid.setVgap(100); // Vertical spacing
@@ -54,20 +50,17 @@ public class AttendanceController {
             for (int j = 0; j < students.size(); j++) {
             	VBox studentCard = new VBox();
             	Label studentID = new Label(students.get(j).getStudentID());
-            	Label studentAttendance = new Label(Double.toString(students.get(j).getAttendancePercentage()));
+            	Label studentAttendance = new Label(Double.toString(students.get(j).getAttendancePercentageByDate(dateCouple)));
             	studentCard.getChildren().add(studentID);
             	studentCard.getChildren().add(studentAttendance);
             	studentsGrid.add(studentCard, j%5, j/5);
-            	System.out.println(students.get(j).getStudentID() + "-----" +students.get(j).getAttendancePercentage());
     		}
             
             coursePane.setContent(studentsGrid);
             scrollablePane.setVvalue(1.0);
 		}
-        
-        
-	}    
-	
+
+	}
 	
 	
 	@FXML	
@@ -80,6 +73,7 @@ public class AttendanceController {
 			System.out.println(courseIDs);
 			
 			if (courseIDs == null) {
+				endDate.setValue(LocalDate.now());
 				System.out.println("new");
 				courseIDs = DataBaseHelper.getAllCourseIDs();
 		    	
@@ -121,11 +115,30 @@ public class AttendanceController {
 	@FXML
 	private void applyFilterClicked() {
 		System.out.println(checkboxes);
+		ArrayList<LocalDate> datesList = new ArrayList<LocalDate>();
+		ArrayList<String> checkedList = new ArrayList<String>();
+		for (int i = 0; i < checkboxes.size(); i++) {
+			if (checkboxes.get(i).isSelected()) {
+				checkedList.add(checkboxes.get(i).getId());
+			}
+		}
+		
+		//System.out.println(startDate.getValue().getClass());
+		if (startDate.getValue() != null ) {
+			datesList.add(startDate.getValue());
+		}
 
+		if (endDate.getValue() != null) {
+			datesList.add(endDate.getValue());
+		}
+		if (datesList.size() == 2) {
+			loadCourses(checkedList, datesList);
+		}
+		else {
+			loadCourses(checkedList, null);
+		}
+		filterOverlay.setVisible(false);
+		filterOpen = false;
 	}
-	
-	
-	
-	
-	
+
 }

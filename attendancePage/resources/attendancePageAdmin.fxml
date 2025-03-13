@@ -20,7 +20,7 @@
         <!-- Top Bar -->
           <AnchorPane maxHeight="282.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #65558F;">
          <children>
-            <Button fx:id="homeButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadAllCourses" prefHeight="50.0" prefWidth="52.0" style="-fx-background-color: transparent;">
+            <Button fx:id="homeButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" prefWidth="52.0" style="-fx-background-color: transparent;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -73,7 +73,6 @@
                <padding>
                   <Insets left="6.0" right="25.0" />
                </padding></TextField>
-            <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true" />
             <Button layoutX="414.0" layoutY="5.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="172.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Mark selected attendance" textFill="#333333">
                <font>
                   <Font name="Segoe UI Bold" size="12.0" />
@@ -104,8 +103,8 @@
                            <content>
                               <VBox prefWidth="100.0">
                                  <children>
-                                    <DatePicker />
-                                    <DatePicker />
+                                    <DatePicker fx:id="startDate" />
+                                    <DatePicker fx:id="endDate" />
                                  </children>
                               </VBox>
                            </content>
