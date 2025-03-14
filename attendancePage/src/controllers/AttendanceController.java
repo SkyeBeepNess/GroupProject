@@ -10,6 +10,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +31,24 @@ public class AttendanceController {
 	@FXML protected ScrollPane courseIDFilter;
 	@FXML protected DatePicker startDate;
 	@FXML protected DatePicker endDate;
+	@FXML protected Button searchButton;
+	@FXML protected TextField searchTextField;
 	
 	protected List<String> courseIDs;
 	protected ArrayList<CheckBox> checkboxes = new ArrayList<>();
 	private boolean filterOpen = false;
+	private ArrayList<String> checkedList = new ArrayList<String>();
+	ArrayList<LocalDate> datesList = new ArrayList<LocalDate>();
 	
-	
-	private void loadCourses(ArrayList<String> coursesList, List<LocalDate> dateCouple) {
-		ArrayList<String> courseIDs = new ArrayList<String>(coursesList);
+	private void loadCourses(ArrayList<String> coursesList, List<LocalDate> dateCouple, String searhInput) {
+		ArrayList<String> courseIDs = new ArrayList<String>();
+		if (coursesList == null) {
+			courseIDs = new ArrayList<String>(DataBaseHelper.getAllCourseIDs());
+		}
+		else {
+			courseIDs = new ArrayList<String>(coursesList);
+		}
+		
 		
 	    coursesContainer.getChildren().clear();
 		for (int i = 0; i < courseIDs.size(); i++) {
@@ -44,7 +56,11 @@ public class AttendanceController {
         	coursePane.setText("Course ID: " + courseIDs.get(i));
         	coursePane.setExpanded(false);
         	coursesContainer.getChildren().add(coursePane);
-        	List<Student> students = DataBaseHelper.getStudentsForCourse(courseIDs.get(i), dateCouple);
+        	List<Student> students = new ArrayList<Student>();
+        	
+        	students = DataBaseHelper.getStudentsForCourse(courseIDs.get(i), dateCouple, searhInput);
+			
+        	
         	GridPane studentsGrid = new GridPane();
             studentsGrid.setHgap(75); // Horizontal spacing
             studentsGrid.setVgap(100); // Vertical spacing
@@ -65,20 +81,14 @@ public class AttendanceController {
 		}
 
 	}
-	
-	
+		
 	@FXML	
 	private void filterClicked() {
-		
-		System.out.println("filterclicked");
-		System.out.println(filterOpen);
+
 		if (filterOpen == false) {
-			
-			System.out.println(courseIDs);
 			
 			if (courseIDs == null) {
 				endDate.setValue(LocalDate.now());
-				System.out.println("new");
 				courseIDs = DataBaseHelper.getAllCourseIDs();
 		    	
 		    	GridPane coursesGrid = new GridPane();
@@ -118,16 +128,15 @@ public class AttendanceController {
 	
 	@FXML
 	private void applyFilterClicked() {
-		System.out.println(checkboxes);
-		ArrayList<LocalDate> datesList = new ArrayList<LocalDate>();
-		ArrayList<String> checkedList = new ArrayList<String>();
+		datesList.clear();
+		checkedList.clear();
+		
 		for (int i = 0; i < checkboxes.size(); i++) {
 			if (checkboxes.get(i).isSelected()) {
 				checkedList.add(checkboxes.get(i).getId());
 			}
 		}
 		
-		//System.out.println(startDate.getValue().getClass());
 		if (startDate.getValue() != null ) {
 			datesList.add(startDate.getValue());
 		}
@@ -136,13 +145,26 @@ public class AttendanceController {
 			datesList.add(endDate.getValue());
 		}
 		if (datesList.size() == 2) {
-			loadCourses(checkedList, datesList);
+			loadCourses(checkedList, datesList, null);
 		}
 		else {
-			loadCourses(checkedList, null);
+			loadCourses(checkedList, null, null);
 		}
 		filterOverlay.setVisible(false);
 		filterOpen = false;
 	}
-
+	
+	@FXML
+	private void searchButtonClicked() {
+		System.out.println("Hello");
+		System.out.println(searchTextField.getText().isBlank());
+		if (checkedList.isEmpty() && datesList.isEmpty()) {
+			loadCourses(null, null, searchTextField.getText());
+		}
+		else {
+			System.out.println("Yes filters");
+			System.out.println(checkedList);
+			System.out.println(datesList);
+		}
+	}
 }

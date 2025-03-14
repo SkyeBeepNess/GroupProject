@@ -20,7 +20,6 @@ public class DataBaseHelper {
 	
 	public static Connection connect() {
         try {
-        	System.out.println(DriverManager.getConnection(URL));
             return DriverManager.getConnection(URL);
             
         } catch (Exception e) {
@@ -37,12 +36,6 @@ public class DataBaseHelper {
                 
                 while (rs.next()) {
                 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                	
-                	System.out.println("Hello");
-                	//System.out.println(rs.getDate("SessionDate"));
-                	System.out.println(LocalDate.parse(rs.getString("SessionDate"), formatter));
-                	System.out.println("bye");
-                    //LocalDate sessionDate = rs.getDate("SessionDate").toLocalDate();
                     LocalDate sessionDate = LocalDate.parse(rs.getString("SessionDate"), formatter);
                     
                     String attended = rs.getString("Attendance");
@@ -72,8 +65,23 @@ public class DataBaseHelper {
         return courseIDs;
     }
     
-    public static List<Student> getStudentsForCourse(String courseID, List<LocalDate> dateRange) {
-        String sql = "SELECT StudentID, attendance, SessionDate FROM Attendance WHERE CourseID = '" + courseID + "'";
+    public static List<Student> getStudentsForCourse(String courseID, List<LocalDate> dateRange, String searchInput) {
+    	String sql = null;
+    	List<String> courses = new ArrayList<String>();
+    	if (searchInput == null && courseID != null) {
+    		sql = "SELECT StudentID, attendance, SessionDate FROM Attendance WHERE CourseID = '" + courseID + "'";
+		}
+    	else if (searchInput != null && courseID != null) {
+    		sql = "SELECT StudentID, attendance, SessionDate FROM Attendance WHERE CourseID = '" + courseID + "' AND StudentID like '%" + searchInput + "'" ;
+		}
+    	else if (courseID == null && searchInput != null) {
+    		courses = getAllCourseIDs();
+    		for (int i = 0; i < getAllCourseIDs().size(); i++) {
+				getStudentsForCourse(courses.get(i), dateRange, searchInput);
+			}
+    		sql = "SELECT StudentID, attendance, SessionDate FROM Attendance WHERE CourseID = '" + courseID + "' AND StudentID like '%" + searchInput + "'" ;
+		}
+    		
         Map<String, Student> studentMap = new HashMap<>();
         
         

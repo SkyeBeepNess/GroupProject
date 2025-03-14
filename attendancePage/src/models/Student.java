@@ -18,9 +18,6 @@ public class Student {
 	private static final String URL = "jdbc:sqlite:resources/UNIMAN.db";
 
 
-    
-    
-    
     public Student(String studentID) {
     	this.attendanceRecords = DataBaseHelper.fetchAllAttendanceRecordsByStudent(studentID);
     	this.studentID = studentID;
