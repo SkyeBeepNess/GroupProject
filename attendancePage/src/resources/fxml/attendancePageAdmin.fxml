@@ -78,7 +78,7 @@
                   <Font name="Segoe UI Bold" size="12.0" />
                </font>
             </Button>
-            <Button fx:id="searchButton" contentDisplay="RIGHT" layoutX="256.0" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#searchButtonClicked" style="-fx-background-color: transparent; -fx-background-radius: 0;" textFill="#333333">
+            <Button fx:id="handleSearch" contentDisplay="RIGHT" layoutX="256.0" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleSearch" style="-fx-background-color: transparent; -fx-background-radius: 0;" textFill="#333333">
                <font>
                   <Font name="Segoe UI Bold" size="12.0" />
                </font>
@@ -103,8 +103,8 @@
                            <content>
                               <VBox prefWidth="100.0">
                                  <children>
-                                    <DatePicker fx:id="startDate" />
-                                    <DatePicker fx:id="endDate" />
+                                    <DatePicker fx:id="startDate" editable="false" />
+                                    <DatePicker fx:id="endDate" editable="false" />
                                  </children>
                               </VBox>
                            </content>
@@ -124,7 +124,7 @@
                         </TitledPane>
                         <AnchorPane maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT">
                            <children>
-                              <Button fx:id="applyFilterButton" mnemonicParsing="false" onMouseClicked="#applyFilterClicked" text="Apply Filter" />
+                              <Button fx:id="applyFilterButton" mnemonicParsing="false" onMouseClicked="#handleApplyFilters" text="Apply Filter" />
                            </children>
                         </AnchorPane>
                      </children>
