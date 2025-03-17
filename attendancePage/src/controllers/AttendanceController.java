@@ -1,28 +1,28 @@
 package controllers;
 
+//javaFX imports
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 
+//java imports
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//methods imports
 import database.DataBaseHelper;
 import models.Student;
-
-
-
 
 public class AttendanceController {
 	@FXML private Button homeButton;
@@ -46,7 +46,7 @@ public class AttendanceController {
 	private ArrayList<LocalDate> datesList = new ArrayList<LocalDate>();
 	
     @FXML
-    private void handleSearch() {
+    private void handleSearch() { //Handles the press of the search button, checks if any filteres were applied and if any text has been inputed into the search field
         String searchInput = searchTextField.getText().trim();
         boolean filtersApplied = !checkedList.isEmpty() || !datesList.isEmpty();
         System.out.println("test");
@@ -61,7 +61,7 @@ public class AttendanceController {
     }
 	
     @FXML
-    private void handleApplyFilters() {
+    private void handleApplyFilters() { //Handles the press of the applied filters button, checks and stores applied filter, checks if search input was provided
     	datesList.clear();
     	for (int i = 0; i < checkboxes.size(); i++) {
 			if (checkboxes.get(i).isSelected()) {
@@ -96,32 +96,29 @@ public class AttendanceController {
 		filterOpen = false;
     }
 	
-    private void loadCourses(List<String> coursesList, List<LocalDate> dateRange, String searchInput) {
+    private void loadCourses(List<String> coursesList, List<LocalDate> dateRange, String searchInput) { //Method that actually loads the attendance data, passes any filters/search to the dbHandler
         coursesContainer.getChildren().clear();
-        System.out.println(coursesList);
         List<String> courseIDs = (coursesList == null) ? DataBaseHelper.getAllCourseIDs() : coursesList;
         List<Student> students = DataBaseHelper.getStudentsForCourse(courseIDs, dateRange, searchInput);
         Map<String, List<Student>> studentsByCourse = new HashMap<>();
-        
-        
-        
+                
         for (Student student : students) {
-
             studentsByCourse.computeIfAbsent(student.getCourseID(), k -> new ArrayList<>()).add(student);
-
         }
 
         for (String courseID : studentsByCourse.keySet()) {
             TitledPane coursePane = new TitledPane();
-            coursePane.setText("Course ID: " + courseID);
-            coursePane.setExpanded(false);
-            coursesContainer.getChildren().add(coursePane);
-
             GridPane studentsGrid = new GridPane();
+            List<Student> courseStudents = studentsByCourse.get(courseID);
+            
             studentsGrid.setHgap(35);
             studentsGrid.setVgap(40);
+            
+            coursePane.setText("Course ID: " + courseID);
+            coursePane.setExpanded(false);
+            
+            coursesContainer.getChildren().add(coursePane);
 
-            List<Student> courseStudents = studentsByCourse.get(courseID);
             for (int j = 0; j < courseStudents.size(); j++) {
                 VBox studentCard = new VBox();
                 Label studentName = new Label(courseStudents.get(j).getName());
