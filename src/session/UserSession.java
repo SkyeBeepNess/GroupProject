@@ -2,17 +2,17 @@ package session;
 
 public class UserSession {
     private static UserSession instance;
-    private int userId;
+    private String userId;
     private String name;
     private String role;
 
-    private UserSession(int userId, String name, String role) {
+    private UserSession(String userId, String name, String role) {
         this.userId = userId;
         this.name = name;
         this.role = role;
     }
 
-    public static void createSession(int userId, String username, String role) {
+    public static void createSession(String userId, String username, String role) {
         instance = new UserSession(userId, username, role);
     }
 
@@ -24,7 +24,7 @@ public class UserSession {
         instance = null;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 

@@ -88,6 +88,20 @@ public class RegisterController {
     
     @FXML
     private void onLoginClicked() {
-    	
+    	try {
+        	FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/loginPage.fxml"));
+        	Parent root = loader.load();
+
+        	Stage stage = (Stage) usernameField.getScene().getWindow(); 
+            
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            
+            stage.setTitle("University Management System - Login");
+            
+            stage.show();
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
     }
 }

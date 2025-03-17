@@ -27,9 +27,9 @@ public class HomeController {
 		 UserSession session = UserSession.getInstance();
 		
 		if ("admin".equals(session.getRole())) {
-			NavigationService.navigateTo("attendancePageAdmin.fxml", "Attendance - Admin");
+			//NavigationService.navigateTo("attendancePageAdmin.fxml", "Attendance - Admin");
 		} else if ("student".equals(session.getRole())) {
-			NavigationService.navigateTo("attendancePageStudent.fxml", "Attendance - Admin");
+			//NavigationService.navigateTo("attendancePageStudent.fxml", "Attendance - Admin");
 		}
 	}
 }

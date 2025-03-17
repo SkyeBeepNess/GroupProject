@@ -33,6 +33,7 @@ public class LoginController {
         
         if (username.isEmpty() || password.isEmpty()) {
         	UIServices.showAlert(AlertType.ERROR, "Login Error", "Empty field");
+        	return;
         }
 
         DataBaseManager dbManager = DataBaseManager.getInstance();

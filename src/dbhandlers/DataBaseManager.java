@@ -1,5 +1,6 @@
 package dbhandlers;
 
+
 import session.UserSession;
 
 import java.io.BufferedReader;
@@ -11,11 +12,11 @@ import java.util.Random;
 public class DataBaseManager {
 
     private static DataBaseManager instance;
-    private Connection connection;
+    private static Connection connection;
     
     private DataBaseManager() {
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:UNIMAN.db");
+            connection = DriverManager.getConnection("jdbc:sqlite:UNIMAN (3).db");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -27,6 +28,11 @@ public class DataBaseManager {
         }
         return instance;
     }
+    
+    public Connection getConnection() {
+        return connection;
+    }
+
     
     public boolean userExists(String username) {
         String sql = "SELECT UserID FROM users WHERE username = ?";
@@ -65,7 +71,7 @@ public class DataBaseManager {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                int userId = rs.getInt("UserID");
+                String userId = rs.getString("UserID");
                 String role = rs.getString("Role");
                 UserSession.createSession(userId, username, role);
                 return true;
@@ -96,11 +102,10 @@ public class DataBaseManager {
     public void loadApplicantsFromCSV(String csvFilePath) {
         String insertApplicantSQL = "INSERT INTO applicants (\"Applicant Name\", \"Date of Application\", \"Certificate\", \"Grade\", \"UKPRN\", \"ApplicationID\", \"Status\", \"UserID\") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:UNIMAN.db");
-             BufferedReader br = new BufferedReader(new FileReader(csvFilePath));
-             PreparedStatement pstmtApplicant = conn.prepareStatement(insertApplicantSQL)) {
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath));
+             PreparedStatement pstmtApplicant = connection.prepareStatement(insertApplicantSQL)) {
 
-            conn.setAutoCommit(false);
+            connection.setAutoCommit(false);
             Random random = new Random();
             String line;
 
@@ -114,7 +119,7 @@ public class DataBaseManager {
                 String certificate = values[2].trim();
                 String grade = values[3].trim();
 
-                int ukprn = getRandomUKPRN(conn, random);
+                int ukprn = getRandomUKPRN(random);
 
                 String applicationID = ukprn + String.valueOf(100000 + random.nextInt(900000));
 
@@ -134,9 +139,9 @@ public class DataBaseManager {
             }
 
             pstmtApplicant.executeBatch();
-            conn.commit();
+            connection.commit();
             
-            generateUniqueUsernamesAndInsertApplicantsIntoUsers(conn);
+            generateUniqueUsernamesAndInsertApplicantsIntoUsers();
 
             System.out.println("CSV успешно загружен в базу данных!");
 
@@ -145,47 +150,48 @@ public class DataBaseManager {
         }
     }
 
-    private void generateUniqueUsernamesAndInsertApplicantsIntoUsers(Connection conn) throws SQLException {
-        String sql = """
-            ALTER TABLE applicants ADD COLUMN username_temp TEXT;
-            WITH NumberedUsers AS (
-                SELECT 
-                    UserID, 
-                    "Applicant Name", 
-                    LOWER(REPLACE("Applicant Name", ' ', '_')) || '_' || 
-                    ROW_NUMBER() OVER (PARTITION BY "Applicant Name" ORDER BY UserID) AS GeneratedUsername 
-                FROM applicants
-            ) 
+    private void generateUniqueUsernamesAndInsertApplicantsIntoUsers() throws SQLException {
+        String addColumnSQL = "ALTER TABLE applicants ADD COLUMN username_temp TEXT";
+        String updateUsernameSQL = """
             UPDATE applicants 
-            SET username_temp = (SELECT GeneratedUsername FROM NumberedUsers WHERE applicants.UserID = NumberedUsers.UserID);
-            
+            SET username_temp = ( 
+                SELECT LOWER(REPLACE("Applicant Name", ' ', '_')) || '_' || 
+                ROW_NUMBER() OVER (PARTITION BY "Applicant Name" ORDER BY UserID) 
+                FROM applicants 
+                WHERE applicants.UserID = applicants.UserID
+            )
+        """;
+        String insertUsersSQL = """
             INSERT INTO users (UserID, Name, Role, username, password) 
             SELECT 
                 UserID, 
                 "Applicant Name", 
-                'applicant' AS Role, 
+                'applicant', 
                 username_temp, 
-                SUBSTR(UserID, -6) AS password 
+                SUBSTR(UserID, -6) 
             FROM applicants 
             WHERE NOT EXISTS (
                 SELECT 1 FROM users u WHERE u.UserID = applicants.UserID
-            );
+            )
+        """;
+        String dropColumnSQL = "ALTER TABLE applicants DROP COLUMN username_temp";
 
-            ALTER TABLE applicants DROP COLUMN username_temp;
-            """;
-
-        try (Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(addColumnSQL);
+            stmt.execute(updateUsernameSQL);
+            stmt.execute(insertUsersSQL);
+            stmt.execute(dropColumnSQL);
         }
     }
 
-    private static int getRandomUKPRN(Connection conn, Random random) throws SQLException {
+    private static int getRandomUKPRN(Random random) throws SQLException {
         String query = "SELECT UKPRN FROM institution ORDER BY RANDOM() LIMIT 1";
-        try (Statement stmt = conn.createStatement();
+        try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) return rs.getInt("UKPRN");
         }
         return 100000 + random.nextInt(900000);
     }
+    
 
 }
