@@ -1,25 +1,34 @@
 package services;
 
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 
 public class NavigationService {
-    public static void navigateTo(String fxmlFile, String sceneTitle) {
+	public static void navigateTo(String fxmlFile, String title) {
         try {
-        	FXMLLoader loader = new FXMLLoader(NavigationService.class.getClassLoader().getResource("views/" + fxmlFile));
+            FXMLLoader loader = new FXMLLoader(NavigationService.class.getResource("/views/" + fxmlFile));
             Parent root = loader.load();
 
-            Stage stage = (Stage) root.getScene().getWindow();
-            Scene scene = new Scene(root);
+            Stage stage = (Stage) Stage.getWindows().stream()
+                    .filter(Window::isShowing)
+                    .findFirst()
+                    .orElse(null);
 
-            stage.setScene(scene);
-            stage.setTitle("University Management System - " + sceneTitle);
-            stage.show();
+            if (stage != null) {
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
+                stage.setTitle(title);
+                stage.show();
+            } else {
+                System.out.println("Ошибка: Нет активного окна для переключения сцены!");
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
