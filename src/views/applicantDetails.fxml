@@ -53,10 +53,16 @@
 
                 <VBox spacing="10">
                     <children>
-                        <Button fx:id="toggleButton1" contentDisplay="RIGHT" onAction="#personalDetailsPopup" prefWidth="600.0" style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: center-left;" text="Personal Details">
-            				<graphic>
-            					<ImageView fx:id="pdStatusImg" fitHeight="25.0" fitWidth="25.0" preserveRatio="true" />
-							</graphic>
+                        <Button fx:id="toggleButton1" contentDisplay="LEFT"
+        				onAction="#personalDetailsPopup" prefWidth="600.0"
+        				style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: CENTER_LEFT;"
+        				text="Personal Details">
+    						<graphic>
+        						<HBox spacing="10" alignment="CENTER_RIGHT">
+            						<ImageView fx:id="pdStatusImg" fitHeight="25.0" fitWidth="25.0" preserveRatio="true" />
+            						<ImageView fx:id="pdArrowImg" fitHeight="20.0" fitWidth="20.0" preserveRatio="true" />
+        						</HBox>
+    						</graphic>
 						</Button>
                         <VBox fx:id="personalDetailsVbox" managed="false" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" visible="false">
     						<Label text="First Name:">
@@ -93,11 +99,17 @@
                         </font>
                      </TextField>
 						</VBox>
-                        <Button fx:id="toggleButton2" contentDisplay="RIGHT" onAction="#academicQualificationPopup" prefWidth="600.0" style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: center-left;" text="Academic Qualification">
-                            <graphic>
-                                <ImageView fx:id="aqStatusImg" fitHeight="25.0" fitWidth="25.0" preserveRatio="true" />
-                            </graphic>
-                        </Button>
+                        <Button fx:id="toggleButton2" contentDisplay="LEFT"
+        				onAction="#academicQualificationPopup" prefWidth="600.0"
+        				style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: CENTER_LEFT;"
+        				text="Academic Qualification">
+    						<graphic>
+        						<HBox spacing="10" alignment="CENTER_RIGHT">
+            						<ImageView fx:id="aqStatusImg" fitHeight="25.0" fitWidth="25.0" preserveRatio="true" />
+            						<ImageView fx:id="aqArrowImg" fitHeight="20.0" fitWidth="20.0" preserveRatio="true" />
+        						</HBox>
+    						</graphic>
+						</Button>
                         <VBox fx:id="academicalQualificationVbox" managed="false" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" visible="false">
                             <Label text="Diploma name of the highest level of education obtained:">
                         <font>
@@ -109,11 +121,11 @@
                            <Font name="Segoe UI Black" size="14.0" />
                         </font></Label>
                             <TextField fx:id="institutionField" />
-                            <Label text="Name of school/university:">
+                            <Label text="Grade:">
                         <font>
                            <Font name="Segoe UI Black" size="14.0" />
                         </font></Label>
-                            <TextField fx:id="institutionField" />
+                            <TextField fx:id="gradeField" />
                             <Label text="Date of completion:">
                         <font>
                            <Font name="Segoe UI Black" size="14.0" />

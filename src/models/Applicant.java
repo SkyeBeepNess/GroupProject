@@ -5,115 +5,50 @@ public class Applicant {
     private String applicationId;
     private String dateOfApplication;
     private String name;
-    private String certificate;
-    private String grade;
+    private String lastName;
+    private String nationality;
+    private String dob; 
     private int ukprn;
-    private String status;
-    private String previousInstitution;
+    private String certificate;
+    private String institution;
+    private String grade;
+    private String docDate;
     private String passportPath;
     private String diplomaPath;
 
-    public Applicant(String userId, String applicationId, String dateOfApplication, String name,
-                     String certificate, String grade, int ukprn, String status, 
-                     String previousInstitution, String passportPath, String diplomaPath) {
+    public Applicant(String userId, String applicationId, String dateOfApplication, String name, String lastName,
+                     String nationality, String dob, int ukprn, String certificate, String institution, String grade,
+                     String docDate,
+                     String passportPath, String diplomaPath) {
         this.userId = userId;
         this.applicationId = applicationId;
         this.dateOfApplication = dateOfApplication;
         this.name = name;
-        this.certificate = certificate;
-        this.grade = grade;
+        this.lastName = lastName;
+        this.nationality = nationality;
+        this.dob = dob;
         this.ukprn = ukprn;
-        this.status = status;
-        this.previousInstitution = previousInstitution;
+        this.certificate = certificate;
+        this.institution = institution;
+        this.grade = grade;
+        this.docDate = docDate;
         this.passportPath = passportPath;
         this.diplomaPath = diplomaPath;
     }
 
-    public String getUserId() {
-        return userId;
-    }
+    public String getUserId() { return userId; }
+    public String getApplicationId() { return applicationId; }
+    public String getDateOfApplication() { return dateOfApplication; }
+    public String getName() { return name; }
+    public String getLastName() { return lastName; }
+    public String getNationality() { return nationality; }
+    public String getDob() { return dob; }
+    public String getCertificate() { return certificate; }
+    public String getPreviousInstitution() { return institution; }
+    public String getGrade() { return grade; }
+    public String getDocDate() { return docDate; }
+    public String getPassportPath() { return passportPath; }
+    public String getDiplomaPath() { return diplomaPath; }
 
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public String getDateOfApplication() {
-        return dateOfApplication;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getCertificate() {
-        return certificate;
-    }
-
-    public String getGrade() {
-        return grade;
-    }
-
-    public int getUkprn() {
-        return ukprn;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getPreviousInstitution() {
-        return previousInstitution;
-    }
-
-    public String getPassportPath() {
-        return passportPath;
-    }
-
-    public String getDiplomaPath() {
-        return diplomaPath;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
-
-    public void setDateOfApplication(String dateOfApplication) {
-        this.dateOfApplication = dateOfApplication;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setCertificate(String certificate) {
-        this.certificate = certificate;
-    }
-
-    public void setGrade(String grade) {
-        this.grade = grade;
-    }
-
-    public void setUkprn(int ukprn) {
-        this.ukprn = ukprn;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setPreviousInstitution(String previousInstitution) {
-        this.previousInstitution = previousInstitution;
-    }
-
-    public void setPassportPath(String passportPath) {
-        this.passportPath = passportPath;
-    }
-
-    public void setDiplomaPath(String diplomaPath) {
-        this.diplomaPath = diplomaPath;
-    }
+    public void setDob(String dob) { this.dob = dob; }
 }

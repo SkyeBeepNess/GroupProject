@@ -28,41 +28,52 @@ public class ApplicantDetailsController {
     
     private final Image exclamationImage = new Image(getClass().getResourceAsStream("/views/img/exclamation.png"));
     private final Image checkImage = new Image(getClass().getResourceAsStream("/views/img/check.png"));
+    private final Image arrowDownImage = new Image(getClass().getResourceAsStream("/views/img/arrow-down.png"));
+    private final Image arrowRightImage = new Image(getClass().getResourceAsStream("/views/img/arrow-right.png"));
 
     private ApplicantDAO applicantDAO;
     private Applicant currentApplicant;
 
+    @FXML private TextField firstNameField, lastNameField, nationalityField, certificateField, gradeField, institutionField;
     @FXML private Label passportDropArea, diplomaDropArea;
     @FXML private TextField passportField, diplomaField;
     @FXML private DatePicker dobPicker, docPicker;
     @FXML private Button toggleButton1, toggleButton2;
-    @FXML private ImageView pdStatusImg, aqStatusImg;
+    @FXML private ImageView pdStatusImg, aqStatusImg, aqArrowImg, pdArrowImg;;
     @FXML private VBox personalDetailsVbox, academicalQualificationVbox;
 
     @FXML
     private void initialize() {
-        applicantDAO = new ApplicantDAO();
+    	applicantDAO = new ApplicantDAO();
         String userId = UserSession.getInstance().getUserId();
         currentApplicant = applicantDAO.getApplicantByUserId(userId);
 
         if (currentApplicant != null) {
-            passportPath = currentApplicant.getPassportPath();
-            diplomaPath = currentApplicant.getDiplomaPath();
-
-            if (passportPath != null) {
-                passportField.setText(new File(passportPath).getName());
-                passportDropArea.setText("File: " + new File(passportPath).getName());
-            }
-            if (diplomaPath != null) {
-                diplomaField.setText(new File(diplomaPath).getName());
-                diplomaDropArea.setText("File: " + new File(diplomaPath).getName());
-            }
+            fillFieldsWithApplicantData();
         }
 
         configureDatePicker(dobPicker);
         configureDatePicker(docPicker);
+
+        updateStatusIcons();
     }
 
+    private void fillFieldsWithApplicantData() {
+        firstNameField.setText(currentApplicant.getName() != null ? currentApplicant.getName() : "");
+        lastNameField.setText(currentApplicant.getLastName() != null ? currentApplicant.getLastName() : "");
+        nationalityField.setText(currentApplicant.getNationality() != null ? currentApplicant.getNationality() : "");
+        certificateField.setText(currentApplicant.getCertificate() != null ? currentApplicant.getCertificate() : "");
+        gradeField.setText(currentApplicant.getGrade() != null ? currentApplicant.getGrade() : "");
+        institutionField.setText(currentApplicant.getPreviousInstitution() != null ? currentApplicant.getPreviousInstitution() : "");
+
+        if (currentApplicant.getDob() != null) {
+            dobPicker.setValue(LocalDate.parse(currentApplicant.getDob(), dateFormatter));
+        }
+        if (currentApplicant.getDocDate() != null) {
+            docPicker.setValue(LocalDate.parse(currentApplicant.getDocDate(), dateFormatter));
+        }
+    }
+    
     private void configureDatePicker(DatePicker datePicker) {
         datePicker.setConverter(new StringConverter<>() {
             @Override
@@ -75,43 +86,105 @@ public class ApplicantDetailsController {
                 return parseDate(string);
             }
         });
+
+        TextField editor = datePicker.getEditor();
+        editor.textProperty().addListener((observable, oldValue, newValue) -> {
+            String formatted = formatDateString(newValue, oldValue);
+            if (!newValue.equals(formatted)) {
+                editor.setText(formatted);
+                editor.positionCaret(editor.getText().length());
+            }
+        });
+    }
+
+    private String formatDateString(String input, String oldValue) {
+        String digits = input.replaceAll("[^\\d]", "");
+
+        if (digits.length() > 8) {
+            digits = digits.substring(0, 8);
+        }
+
+        StringBuilder formatted = new StringBuilder();
+        for (int i = 0; i < digits.length(); i++) {
+            formatted.append(digits.charAt(i));
+            if ((i == 1 || i == 3) && i + 1 < digits.length()) {
+                formatted.append("/");
+            }
+        }
+
+        long oldSlashCount = oldValue.chars().filter(ch -> ch == '/').count();
+        long newSlashCount = formatted.chars().filter(ch -> ch == '/').count();
+
+        if (oldSlashCount > newSlashCount) {
+            return oldValue;
+        }
+
+        return formatted.toString();
     }
 
     private LocalDate parseDate(String date) {
-        if (!date.matches("\\d{2}/\\d{2}/\\d{4}")) return null;
+        if (!date.matches("\\d{2}/\\d{2}/\\d{4}")) {
+            return null;
+        }
+
         try {
             String[] parts = date.split("/");
             int day = Integer.parseInt(parts[0]);
             int month = Integer.parseInt(parts[1]);
             int year = Integer.parseInt(parts[2]);
-            return LocalDate.of(year, Math.min(12, Math.max(1, month)), Math.min(YearMonth.of(year, month).lengthOfMonth(), Math.max(1, day)));
+            int currentYear = LocalDate.now().getYear();
+
+            if (month < 1) month = 1;
+            if (month > 12) month = 12;
+
+            int maxDays = YearMonth.of(year, month).lengthOfMonth();
+            if (day < 1) day = 1;
+            if (day > maxDays) day = maxDays;
+
+            return LocalDate.of(year, month, day);
         } catch (NumberFormatException | DateTimeParseException e) {
             return null;
         }
     }
-
+    
     @FXML
     private void onHomeClicked() {
-        NavigationService.navigateTo("HomePage.fxml", "Home");
+    	NavigationService.navigateTo("HomePage.fxml", "Home");
+    }
+
+    public LocalDate getSelectedDate() {
+        return dobPicker.getValue();
     }
 
     @FXML
     private void personalDetailsPopup() {
-        togglePopup(personalDetailsVbox, pdStatusImg);
+        togglePopup(personalDetailsVbox, pdStatusImg, pdArrowImg);
     }
 
     @FXML
     private void academicQualificationPopup() {
-        togglePopup(academicalQualificationVbox, aqStatusImg);
+        togglePopup(academicalQualificationVbox, aqStatusImg, aqArrowImg);
     }
 
-    private void togglePopup(VBox vbox, ImageView statusImg) {
+    private void togglePopup(VBox vbox, ImageView statusImg, ImageView arrowImg) {
         boolean isVisible = !vbox.isVisible();
         vbox.setVisible(isVisible);
         vbox.setManaged(isVisible);
-        if (statusImg != null) {
-            statusImg.setImage(isVisible ? checkImage : exclamationImage);
-        }
+        arrowImg.setImage(isVisible ? arrowDownImage : arrowRightImage);
+        updateStatusIcons();
+    }
+    
+    private void updateStatusIcons() {
+        boolean personalComplete = !firstNameField.getText().trim().isEmpty() &&
+                                   !nationalityField.getText().trim().isEmpty() &&
+                                   dobPicker.getValue() != null;
+
+        boolean academicComplete = !certificateField.getText().trim().isEmpty() &&
+                                   !institutionField.getText().trim().isEmpty() &&
+                                   docPicker.getValue() != null;
+
+        pdStatusImg.setImage(personalComplete ? checkImage : exclamationImage);
+        aqStatusImg.setImage(academicComplete ? checkImage : exclamationImage);
     }
 
     @FXML
