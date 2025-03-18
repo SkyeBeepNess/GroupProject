@@ -15,11 +15,12 @@ public class Applicant {
     private String docDate;
     private String passportPath;
     private String diplomaPath;
+    private String status;
 
     public Applicant(String userId, String applicationId, String dateOfApplication, String name, String lastName,
                      String nationality, String dob, int ukprn, String certificate, String institution, String grade,
                      String docDate,
-                     String passportPath, String diplomaPath) {
+                     String passportPath, String diplomaPath, String status) {
         this.userId = userId;
         this.applicationId = applicationId;
         this.dateOfApplication = dateOfApplication;
@@ -34,6 +35,17 @@ public class Applicant {
         this.docDate = docDate;
         this.passportPath = passportPath;
         this.diplomaPath = diplomaPath;
+        this.status = status;
+    }
+    
+    public Applicant(String userId, String name, String applicationId, String dateOfApplication, String certificate, String grade, String status) {
+    	this.userId = userId;
+        this.name = name;
+        this.applicationId = applicationId;
+        this.dateOfApplication = dateOfApplication;
+        this.certificate = certificate;
+        this.grade = grade;
+        this.status = status;
     }
 
     public String getUserId() { return userId; }
@@ -49,6 +61,7 @@ public class Applicant {
     public String getDocDate() { return docDate; }
     public String getPassportPath() { return passportPath; }
     public String getDiplomaPath() { return diplomaPath; }
-
+    public String getStatus() { return status; }
+    
     public void setDob(String dob) { this.dob = dob; }
 }

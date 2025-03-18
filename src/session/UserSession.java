@@ -35,4 +35,15 @@ public class UserSession {
     public String getRole() {
         return role;
     }
+    
+    private static String selectedApplicantId;
+
+    public static String getSelectedApplicantId() {
+        return selectedApplicantId;
+    }
+
+    public static void setSelectedApplicantId(String applicantId) {
+        selectedApplicantId = applicantId;
+    }
+    
 }

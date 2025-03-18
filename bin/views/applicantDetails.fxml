@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #D9D9D9;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ApplicantDetailsController">
+<AnchorPane maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: lightgrey;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ApplicantDetailsController">
 
     <AnchorPane maxHeight="50.0" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #65558F;">
         <children>
@@ -35,7 +35,7 @@
     </AnchorPane>
     
     <!-- ScrollPane для прокрутки -->
-    <ScrollPane fitToWidth="true" layoutX="0.0" layoutY="50.0" prefHeight="350.0" prefWidth="600.0">
+    <ScrollPane fitToWidth="true" layoutX="0.0" layoutY="50.0" prefHeight="350.0" prefWidth="600.0" style="-fx-background-color: #ECECEC;">
         <content>
             <VBox prefWidth="600.0" spacing="10">
                 <padding>
@@ -53,14 +53,14 @@
 
                 <VBox spacing="10">
                     <children>
-                        <Button fx:id="toggleButton1" contentDisplay="LEFT"
-        				onAction="#personalDetailsPopup" prefWidth="600.0"
-        				style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: CENTER_LEFT;"
-        				text="Personal Details">
+                        <Button fx:id="toggleButton1" contentDisplay="LEFT" onAction="#personalDetailsPopup" prefWidth="600.0" style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: CENTER_LEFT;" text="Personal Details">
     						<graphic>
-        						<HBox spacing="10" alignment="CENTER_RIGHT">
+        						<HBox alignment="CENTER_RIGHT" spacing="10">
             						<ImageView fx:id="pdStatusImg" fitHeight="25.0" fitWidth="25.0" preserveRatio="true" />
-            						<ImageView fx:id="pdArrowImg" fitHeight="20.0" fitWidth="20.0" preserveRatio="true" />
+            						<ImageView fx:id="pdArrowImg" fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                              <image>
+                                 <Image url="@img/arrow-down.png" />
+                              </image></ImageView>
         						</HBox>
     						</graphic>
 						</Button>
@@ -69,27 +69,27 @@
                         <font>
                            <Font name="Segoe UI Black" size="12.0" />
                         </font></Label>
-    						<TextField fx:id="firstNameField" />
+    						<TextField fx:id="firstNameField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
     
    							<Label text="Last Name:">
    						<font>
                            <Font name="Segoe UI Black" size="12.0" />
                         </font></Label>
-    						<TextField fx:id="lastNameField" />
+    						<TextField fx:id="lastNameField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
 
     						<Label text="Nationality:">
     					<font>
                            <Font name="Segoe UI Black" size="12.0" />
                         </font></Label>
-    						<TextField fx:id="nationalityField" />
+    						<TextField fx:id="nationalityField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
 
     						<Label text="Date of Birth:">
                         <font>
                            <Font name="Segoe UI Black" size="14.0" />
                         </font></Label>
-                     		<DatePicker fx:id="dobPicker" prefWidth="200.0" />
+                     		<DatePicker fx:id="dobPicker" prefWidth="200.0" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
                      		<Label text="Passport File:" />
-    						<Label fx:id="passportDropArea" onDragDropped="#handleDropPassport" onDragOver="#handleDragOverPassport" onMouseClicked="#uploadPassport" prefHeight="150.0" prefWidth="300.0" style="-fx-border-color: #888888; -fx-background-color: white; -fx-padding: 10; -fx-alignment: center;" text="Drag and Drop or Click to Upload">
+    						<Label fx:id="passportDropArea" onDragDropped="#handleDropPassport" onDragOver="#handleDragOverPassport" onMouseClicked="#uploadPassport" prefHeight="150.0" prefWidth="300.0" style="-fx-background-color: #ECECEC; -fx-padding: 10; -fx-alignment: center; -fx-background-radius: 25;" text="Drag and Drop or Click to Upload">
                         <font>
                            <Font name="Segoe UI Black" size="12.0" />
                         </font></Label>
@@ -99,14 +99,14 @@
                         </font>
                      </TextField>
 						</VBox>
-                        <Button fx:id="toggleButton2" contentDisplay="LEFT"
-        				onAction="#academicQualificationPopup" prefWidth="600.0"
-        				style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: CENTER_LEFT;"
-        				text="Academic Qualification">
+                        <Button fx:id="toggleButton2" contentDisplay="LEFT" onAction="#academicQualificationPopup" prefWidth="600.0" style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: CENTER_LEFT;" text="Academic Qualification">
     						<graphic>
-        						<HBox spacing="10" alignment="CENTER_RIGHT">
+        						<HBox alignment="CENTER_RIGHT" spacing="10">
             						<ImageView fx:id="aqStatusImg" fitHeight="25.0" fitWidth="25.0" preserveRatio="true" />
-            						<ImageView fx:id="aqArrowImg" fitHeight="20.0" fitWidth="20.0" preserveRatio="true" />
+            						<ImageView fx:id="aqArrowImg" fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                              <image>
+                                 <Image url="@img/arrow-down.png" />
+                              </image></ImageView>
         						</HBox>
     						</graphic>
 						</Button>
@@ -115,24 +115,24 @@
                         <font>
                            <Font name="Segoe UI Black" size="14.0" />
                         </font></Label>
-                            <TextField fx:id="certificateField" />
+                            <TextField fx:id="certificateField" style="-fx-background-color: #ECECEC;" />
                             <Label text="Name of school/university:">
                         <font>
                            <Font name="Segoe UI Black" size="14.0" />
                         </font></Label>
-                            <TextField fx:id="institutionField" />
+                            <TextField fx:id="institutionField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
                             <Label text="Grade:">
                         <font>
                            <Font name="Segoe UI Black" size="14.0" />
                         </font></Label>
-                            <TextField fx:id="gradeField" />
+                            <TextField fx:id="gradeField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
                             <Label text="Date of completion:">
                         <font>
                            <Font name="Segoe UI Black" size="14.0" />
                         </font></Label>
-                            <DatePicker fx:id="docPicker" prefWidth="200.0" />
+                            <DatePicker fx:id="docPicker" prefWidth="200.0" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
                             <Label text="Diploma File:" />
-    						<Label fx:id="diplomaDropArea" onDragDropped="#handleDropDiploma" onDragOver="#handleDragOverDiploma" onMouseClicked="#uploadDiploma" prefHeight="150.0" prefWidth="300.0" style="-fx-border-color: #888888; -fx-background-color: white; -fx-padding: 10; -fx-alignment: center;" text="Drag and Drop or Click to Upload">
+    						<Label fx:id="diplomaDropArea" onDragDropped="#handleDropDiploma" onDragOver="#handleDragOverDiploma" onMouseClicked="#uploadDiploma" prefHeight="150.0" prefWidth="300.0" style="-fx-background-color: #ECECEC; -fx-padding: 10; -fx-alignment: center; -fx-background-radius: 25;" text="Drag and Drop or Click to Upload">
                         <font>
                            <Font name="Segoe UI Black" size="12.0" />
                         </font></Label>

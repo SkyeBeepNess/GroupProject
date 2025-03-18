@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #D9D9D9;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ApplicantListController">
+
+    <VBox prefHeight="400.0" prefWidth="600.0">
+        <!-- Top Bar -->
+          <AnchorPane maxHeight="282.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #65558F;">
+         <children>
+            <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeClicked" prefHeight="50.0" prefWidth="52.0" style="-fx-background-color: transparent;">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@img/home.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+             
+               <Text fx:id="test" fill="WHITE" layoutX="279.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="UMS" textAlignment="CENTER" wrappingWidth="42.39453125">
+               <font>
+                  <Font name="Segoe UI Bold" size="18.0" />
+               </font>
+            </Text>
+         </children>
+        </AnchorPane>
+      <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="44.0" prefWidth="600.0">
+         <children>
+            <Text layoutX="209.0" layoutY="28.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Applicant List" textAlignment="CENTER" wrappingWidth="182.13671875">
+               <font>
+                  <Font name="Segoe UI Bold" size="16.0" />
+               </font>
+            </Text>
+            <Button layoutX="496.0" layoutY="11.0" mnemonicParsing="false" onAction="#onImportClicked" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Import CSV" textFill="#333333">
+               <font>
+                  <Font name="Segoe UI Bold" size="12.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+      <AnchorPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="307.0" prefWidth="600.0">
+         <children>
+            <Button alignment="CENTER" contentDisplay="RIGHT" graphicTextGap="6.0" layoutX="14.0" layoutY="6.0" mnemonicParsing="false" onAction="#onFilterClicked" prefHeight="23.0" prefWidth="165.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Filter by University" textFill="#333333">
+               <font>
+                  <Font name="Segoe UI Bold" size="12.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="14.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@img/filter.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <TextField fx:id="searchTextField" layoutX="187.0" layoutY="4.0" prefHeight="26.0" prefWidth="400.0" promptText="Search by name or ApplicationID" style="-fx-background-color: #FFFFFF; -fx-background-radius: 100;">
+               <padding>
+                  <Insets left="6.0" right="25.0" />
+               </padding></TextField>
+            <Button contentDisplay="RIGHT" layoutX="562.0" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#onSearchClicked" prefHeight="23.0" prefWidth="14.0" style="-fx-background-color: transparent; -fx-background-radius: 0;" textFill="#333333">
+               <font>
+                  <Font name="Segoe UI Bold" size="12.0" />
+               </font>
+            </Button>
+            <ImageView fitHeight="14.0" fitWidth="23.0" layoutX="563.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@img/search.png" />
+               </image>
+            </ImageView>
+            <TableView fx:id="applicantTable" layoutX="14.0" layoutY="37.0" prefHeight="229.0" prefWidth="574.0">
+              <columns>
+                <TableColumn fx:id="colApplicantName" prefWidth="119.20001220703125" text="Applicant Name" />
+                <TableColumn fx:id="colDate" prefWidth="64.79998779296875" text="Date" />
+                  <TableColumn fx:id="colCertificate" prefWidth="118.4000244140625" text="Certificate" />
+                  <TableColumn fx:id="colGrade" prefWidth="68.800048828125" text="Grade" />
+                  <TableColumn fx:id="colApplicationId" prefWidth="123.99993896484375" text="ApplicationID" />
+                  <TableColumn fx:id="colStatus" prefWidth="76.00002441406252" text="Status" />
+              </columns>
+            </TableView>
+            <Button layoutX="289.0" layoutY="270.0" mnemonicParsing="false" onAction="#onRejectClicked" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Reject" textFill="#333333">
+               <font>
+                  <Font name="Segoe UI Bold" size="12.0" />
+               </font>
+            </Button>
+            <Button fx:id="viewDetailsButton" layoutX="495.0" layoutY="270.0" mnemonicParsing="false" onAction="#viewApplicantDetails" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="View Details" textFill="#333333">
+               <font>
+                  <Font name="Segoe UI Bold" size="12.0" />
+               </font>
+            </Button>
+            <Button layoutX="387.0" layoutY="270.0" mnemonicParsing="false" onAction="#onAcceptClicked" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Accept" textFill="#333333">
+               <font>
+                  <Font name="Segoe UI Bold" size="12.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+
+    </VBox>
+</AnchorPane>

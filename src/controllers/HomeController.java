@@ -21,8 +21,13 @@ public class HomeController {
 	
 	@FXML
 	private void onApplicantClicked() {
-		if (true) {
+		UserSession session = UserSession.getInstance();
+		
+		if ("applicant".equals(session.getRole())) {
 			NavigationService.navigateTo("ApplicantDetails.fxml", "ApplicantDetails");
+		}
+		else if ("admin".equals(session.getRole())){
+			NavigationService.navigateTo("ApplicantListAdmin.fxml", "Applicant List");
 		}
 		else {
 			UIServices.showAlert(AlertType.ERROR, "Access Denied", "Please contact support");

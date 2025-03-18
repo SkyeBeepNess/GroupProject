@@ -147,6 +147,16 @@ public class ApplicantDetailsController {
         }
     }
     
+    private void disableEditing() {
+        firstNameField.setDisable(true);
+        lastNameField.setDisable(true);
+        nationalityField.setDisable(true);
+        certificateField.setDisable(true);
+        institutionField.setDisable(true);
+        dobPicker.setDisable(true);
+        docPicker.setDisable(true);
+    }
+    
     @FXML
     private void onHomeClicked() {
     	NavigationService.navigateTo("HomePage.fxml", "Home");

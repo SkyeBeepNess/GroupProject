@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApplicantDAO {
     private final Connection connection;
@@ -20,7 +22,6 @@ public class ApplicantDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Разделяем `Applicant Name` на firstName и lastName
                 String fullName = rs.getString("Applicant Name");
                 String[] nameParts = fullName.split(" ");
                 String lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
@@ -40,7 +41,8 @@ public class ApplicantDAO {
                     rs.getString("Grade"),
                     rs.getString("DateOfCompletion"),
                     rs.getString("PassportPath"),
-                    rs.getString("DiplomaPath")
+                    rs.getString("DiplomaPath"),
+                    rs.getString("Status")
                 );
             }
         } catch (SQLException e) {
@@ -82,4 +84,27 @@ public class ApplicantDAO {
         }
         return false;
     }
+    
+    public List<Applicant> getAllApplicants() {
+        List<Applicant> applicants = new ArrayList<>();
+        String sql = "SELECT * FROM applicants";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                applicants.add(new Applicant(
+                        rs.getString("UserID"),
+                        rs.getString("Applicant Name"),
+                        rs.getString("ApplicationID"),
+                        rs.getString("Date of Application"),
+                        rs.getString("Certificate"),
+                        rs.getString("Grade"),
+                        rs.getString("Status")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return applicants;
+    }
+
 }
