@@ -3,6 +3,7 @@ package controllers;
 import dbhandlers.ApplicantDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
@@ -14,6 +15,7 @@ import javafx.util.StringConverter;
 import models.Applicant;
 import session.UserSession;
 import services.NavigationService;
+import services.UIServices;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -33,6 +35,7 @@ public class ApplicantDetailsController {
 
     private ApplicantDAO applicantDAO;
     private Applicant currentApplicant;
+    private boolean isAdminView;
 
     @FXML private TextField firstNameField, lastNameField, nationalityField, certificateField, gradeField, institutionField;
     @FXML private Label passportDropArea, diplomaDropArea;
@@ -44,17 +47,27 @@ public class ApplicantDetailsController {
 
     @FXML
     private void initialize() {
+    	UserSession session = UserSession.getInstance();
     	applicantDAO = new ApplicantDAO();
-        String userId = UserSession.getInstance().getUserId();
-        currentApplicant = applicantDAO.getApplicantByUserId(userId);
+        String role = session.getRole();
+        String selectedApplicantId = session.getSelectedApplicantId();
+
+        isAdminView = "admin".equals(role);
+
+        if (isAdminView) {
+            if (selectedApplicantId != null) {
+                currentApplicant = applicantDAO.getApplicantByUserId(selectedApplicantId);
+                disableEditing();
+            }
+        } else {
+            currentApplicant = applicantDAO.getApplicantByUserId(session.getUserId());
+        }
 
         if (currentApplicant != null) {
             fillFieldsWithApplicantData();
         }
-
         configureDatePicker(dobPicker);
         configureDatePicker(docPicker);
-
         updateStatusIcons();
     }
 
@@ -153,6 +166,7 @@ public class ApplicantDetailsController {
         nationalityField.setDisable(true);
         certificateField.setDisable(true);
         institutionField.setDisable(true);
+        gradeField.setDisable(true);
         dobPicker.setDisable(true);
         docPicker.setDisable(true);
     }
@@ -164,6 +178,34 @@ public class ApplicantDetailsController {
 
     public LocalDate getSelectedDate() {
         return dobPicker.getValue();
+    }
+    
+    @FXML
+    private void savePersonalDetails() {
+        if (currentApplicant != null) {
+            currentApplicant.setName(firstNameField.getText().trim());
+            currentApplicant.setLastName(lastNameField.getText().trim());
+            currentApplicant.setNationality(nationalityField.getText().trim());
+            if (dobPicker.getValue() != null) {
+                currentApplicant.setDob(dobPicker.getValue().format(dateFormatter));
+            }
+            applicantDAO.updatePersonalDetails(currentApplicant);
+            UIServices.showAlert(AlertType.INFORMATION, "Success", "Personal details saved successfully!");
+        }
+    }
+    
+    @FXML
+    private void saveAcademicQualification() {
+        if (currentApplicant != null) {
+            currentApplicant.setCertificate(certificateField.getText().trim());
+            currentApplicant.setInstitution(institutionField.getText().trim());
+            currentApplicant.setGrade(gradeField.getText().trim());
+            if (docPicker.getValue() != null) {
+                currentApplicant.setDocDate(docPicker.getValue().format(dateFormatter));
+            }
+            applicantDAO.updateAcademicQualification(currentApplicant);
+            UIServices.showAlert(AlertType.INFORMATION, "Success", "Academic Qualificaation saved successfully!");
+        }
     }
 
     @FXML

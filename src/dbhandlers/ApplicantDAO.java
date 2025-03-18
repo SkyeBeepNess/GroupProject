@@ -84,6 +84,7 @@ public class ApplicantDAO {
         }
         return false;
     }
+   
     
     public List<Applicant> getAllApplicants() {
         List<Applicant> applicants = new ArrayList<>();
@@ -105,6 +106,35 @@ public class ApplicantDAO {
             e.printStackTrace();
         }
         return applicants;
+    }
+    
+    public boolean updatePersonalDetails(Applicant applicant) {
+        String sql = "UPDATE applicants SET `Applicant Name` = ?, Nationality = ?, DateOfBirth = ? WHERE UserID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, applicant.getName() + " " + applicant.getLastName());
+            stmt.setString(2, applicant.getNationality());
+            stmt.setString(3, applicant.getDob());
+            stmt.setString(4, applicant.getUserId());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean updateAcademicQualification(Applicant applicant) {
+        String sql = "UPDATE applicants SET Certificate = ?, Institution = ?, Grade = ?, DateOfCompletion = ? WHERE UserID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, applicant.getCertificate());
+            stmt.setString(2, applicant.getPreviousInstitution());
+            stmt.setString(3, applicant.getGrade());
+            stmt.setString(4, applicant.getDocDate());
+            stmt.setString(5, applicant.getUserId());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

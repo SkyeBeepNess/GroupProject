@@ -63,5 +63,19 @@ public class Applicant {
     public String getDiplomaPath() { return diplomaPath; }
     public String getStatus() { return status; }
     
+    public void setUserId(String userId) { this.userId = userId; }
+    public void setApplicationId(String applicationId) { this.applicationId = applicationId; }
+    public void setDateOfApplication(String dateOfApplication) { this.dateOfApplication = dateOfApplication; }
+    public void setName(String name) { this.name = name; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setNationality(String nationality) { this.nationality = nationality; }
     public void setDob(String dob) { this.dob = dob; }
+    public void setUkprn(int ukprn) { this.ukprn = ukprn; }
+    public void setCertificate(String certificate) { this.certificate = certificate; }
+    public void setInstitution(String institution) { this.institution = institution; }
+    public void setGrade(String grade) { this.grade = grade; }
+    public void setDocDate(String docDate) { this.docDate = docDate; }
+    public void setPassportPath(String passportPath) { this.passportPath = passportPath; }
+    public void setDiplomaPath(String diplomaPath) { this.diplomaPath = diplomaPath; }
+    public void setStatus(String status) { this.status = status; }
 }
