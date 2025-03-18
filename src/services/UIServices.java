@@ -13,5 +13,13 @@ public class UIServices {
         alert.showAndWait();
     }
 	
+	public static void showWorkings() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("In progress");
+        alert.setHeaderText(null);
+        alert.setContentText("This section is not ready yet");
+        alert.showAndWait();
+    }
+	
 
 }

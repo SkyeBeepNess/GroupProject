@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -13,79 +16,123 @@
 
 <AnchorPane maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #D9D9D9;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ApplicantDetailsController">
 
-    <VBox prefHeight="400.0" prefWidth="600.0">
-        <!-- Top Bar -->
-          <AnchorPane maxHeight="282.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #65558F;">
-         <children>
-            <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" style="-fx-background-color: transparent;" />
-            <ImageView fitHeight="50.0" fitWidth="30.0" layoutX="16.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@img/home.png" />
-               </image>
-            </ImageView>
-             
-               <Text fill="WHITE" layoutX="279.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="UMS" textAlignment="CENTER" wrappingWidth="42.39453125">
-               <font>
-                  <Font name="Segoe UI Bold" size="18.0" />
-               </font>
+    <AnchorPane maxHeight="50.0" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #65558F;">
+        <children>
+            <Button layoutX="-3.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeClicked" prefHeight="50.0" prefWidth="66.0" style="-fx-background-color: transparent;">
+            <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                          <Image url="@img/home.png" />
+                      </image>
+                  </ImageView>
+            </graphic></Button>
+            <Text fill="WHITE" layoutX="279.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="UMS" textAlignment="CENTER" wrappingWidth="42.39453125">
+                <font>
+                    <Font name="Segoe UI Bold" size="18.0" />
+                </font>
             </Text>
-         </children>
-        </AnchorPane>
-      <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" prefHeight="32.0" prefWidth="600.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Application ID">
-               <font>
-                  <Font name="Segoe UI" size="18.0" />
-               </font>
-            </Text>
-         </children>
-      </HBox>
-      <VBox spacing="10">
-         <children>
-            <VBox spacing="5">
-               <children>
-                  <HBox spacing="10">
-                     <children>
-                        <Label text="Personal Details">
-                           <font>
-                              <Font name="Segoe UI" size="12.0" />
-                           </font>
-                        </Label>
-                        <Button fx:id="toggleButton1" onAction="#togglePopup1" text="Открыть" />
-                     </children>
-                  </HBox>
-                  <VBox fx:id="popupVBox1" managed="false" spacing="10" style="-fx-border-color: black; -fx-padding: 10; -fx-background-color: lightgray;" visible="false">
-                     <children>
-                        <Label text="First Name:" visible="false" />
-                        <TextField fx:id="nameField" />
-                        <Label text="Last Name:" />
-                        <TextField fx:id="ageField" />
-                     </children>
-                  </VBox>
-               </children>
-            </VBox>
-            <VBox spacing="5">
-               <children>
-                  <HBox spacing="10">
-                     <children>
-                        <Label text="Academic Qualification" />
-                        <Button fx:id="toggleButton2" onAction="#togglePopup2" text="Открыть" />
-                     </children>
-                  </HBox>
-                  <VBox fx:id="popupVBox2" managed="false" spacing="10" style="-fx-border-color: black; -fx-padding: 10; -fx-background-color: lightgray;" visible="false">
-                     <children>
-                        <Label text="Email:" />
-                        <TextField fx:id="emailField" />
-                        <Label text="Телефон:" />
-                        <TextField fx:id="phoneField" />
-                     </children>
-                  </VBox>
-               </children>
-            </VBox>
-         </children>
-      </VBox>
+        </children>
+    </AnchorPane>
+    
+    <!-- ScrollPane для прокрутки -->
+    <ScrollPane fitToWidth="true" layoutX="0.0" layoutY="50.0" prefHeight="350.0" prefWidth="600.0">
+        <content>
+            <VBox prefWidth="600.0" spacing="10">
+                <padding>
+                    <Insets bottom="10" left="10" right="10" top="10" />
+                </padding>
+                <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" prefHeight="32.0" prefWidth="600.0">
+                    <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Application ID">
+                            <font>
+                                <Font name="Segoe UI" size="18.0" />
+                            </font>
+                        </Text>
+                    </children>
+                </HBox>
 
-        <!-- Login Form Card -->
+                <VBox spacing="10">
+                    <children>
+                        <Button fx:id="toggleButton1" contentDisplay="RIGHT" onAction="#personalDetailsPopup" prefWidth="600.0" style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: center-left;" text="Personal Details">
+            				<graphic>
+            					<ImageView fx:id="pdStatusImg" fitHeight="25.0" fitWidth="25.0" preserveRatio="true" />
+							</graphic>
+						</Button>
+                        <VBox fx:id="personalDetailsVbox" managed="false" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" visible="false">
+    						<Label text="First Name:">
+                        <font>
+                           <Font name="Segoe UI Black" size="12.0" />
+                        </font></Label>
+    						<TextField fx:id="firstNameField" />
+    
+   							<Label text="Last Name:">
+   						<font>
+                           <Font name="Segoe UI Black" size="12.0" />
+                        </font></Label>
+    						<TextField fx:id="lastNameField" />
 
-    </VBox>
+    						<Label text="Nationality:">
+    					<font>
+                           <Font name="Segoe UI Black" size="12.0" />
+                        </font></Label>
+    						<TextField fx:id="nationalityField" />
+
+    						<Label text="Date of Birth:">
+                        <font>
+                           <Font name="Segoe UI Black" size="14.0" />
+                        </font></Label>
+                     		<DatePicker fx:id="dobPicker" prefWidth="200.0" />
+                     		<Label text="Passport File:" />
+    						<Label fx:id="passportDropArea" onDragDropped="#handleDropPassport" onDragOver="#handleDragOverPassport" onMouseClicked="#uploadPassport" prefHeight="150.0" prefWidth="300.0" style="-fx-border-color: #888888; -fx-background-color: white; -fx-padding: 10; -fx-alignment: center;" text="Drag and Drop or Click to Upload">
+                        <font>
+                           <Font name="Segoe UI Black" size="12.0" />
+                        </font></Label>
+    						<TextField fx:id="passportField" editable="false" visible="false">
+                        <font>
+                           <Font name="Segoe UI Black" size="12.0" />
+                        </font>
+                     </TextField>
+						</VBox>
+                        <Button fx:id="toggleButton2" contentDisplay="RIGHT" onAction="#academicQualificationPopup" prefWidth="600.0" style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: center-left;" text="Academic Qualification">
+                            <graphic>
+                                <ImageView fx:id="aqStatusImg" fitHeight="25.0" fitWidth="25.0" preserveRatio="true" />
+                            </graphic>
+                        </Button>
+                        <VBox fx:id="academicalQualificationVbox" managed="false" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" visible="false">
+                            <Label text="Diploma name of the highest level of education obtained:">
+                        <font>
+                           <Font name="Segoe UI Black" size="14.0" />
+                        </font></Label>
+                            <TextField fx:id="certificateField" />
+                            <Label text="Name of school/university:">
+                        <font>
+                           <Font name="Segoe UI Black" size="14.0" />
+                        </font></Label>
+                            <TextField fx:id="institutionField" />
+                            <Label text="Name of school/university:">
+                        <font>
+                           <Font name="Segoe UI Black" size="14.0" />
+                        </font></Label>
+                            <TextField fx:id="institutionField" />
+                            <Label text="Date of completion:">
+                        <font>
+                           <Font name="Segoe UI Black" size="14.0" />
+                        </font></Label>
+                            <DatePicker fx:id="docPicker" prefWidth="200.0" />
+                            <Label text="Diploma File:" />
+    						<Label fx:id="diplomaDropArea" onDragDropped="#handleDropDiploma" onDragOver="#handleDragOverDiploma" onMouseClicked="#uploadDiploma" prefHeight="150.0" prefWidth="300.0" style="-fx-border-color: #888888; -fx-background-color: white; -fx-padding: 10; -fx-alignment: center;" text="Drag and Drop or Click to Upload">
+                        <font>
+                           <Font name="Segoe UI Black" size="12.0" />
+                        </font></Label>
+    						<TextField fx:id="diplomaField" editable="false" visible="false">
+                        <font>
+                           <Font name="Segoe UI Black" size="12.0" />
+                        </font>
+                     </TextField>
+                        </VBox>
+                    </children>
+                </VBox>
+            </VBox>
+        </content>
+    </ScrollPane>
 </AnchorPane>
