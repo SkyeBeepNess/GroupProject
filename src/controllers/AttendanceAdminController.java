@@ -23,8 +23,9 @@ import java.util.Map;
 //methods imports
 import dbhandlers.DataBaseHelper;
 import models.Student;
+import services.NavigationService;
 
-public class AttendanceController {
+public class AttendanceAdminController {
 	@FXML private Button homeButton;
 	@FXML private Button searchButton;
 	@FXML private Button filterButton;
@@ -115,6 +116,7 @@ public class AttendanceController {
             studentsGrid.setVgap(40);
             
             coursePane.setText("Course ID: " + courseID);
+            coursePane.setPrefWidth(600);
             coursePane.setExpanded(false);
             
             coursesContainer.getChildren().add(coursePane);
@@ -138,18 +140,21 @@ public class AttendanceController {
 	
 	@FXML	
 	private void filterClicked() {
+
+
 		if (filterOpen == false) {
 			if (courseIDs == null) {
 				endDate.setValue(LocalDate.now());
 				courseIDs = DataBaseHelper.getAllCourseIDs();
-		    	
+				//1 -- 0.09365
 		    	GridPane coursesGrid = new GridPane();
 		    	coursesGrid.setHgap(15); // Horizontal spacing
 		    	coursesGrid.setVgap(0); // Vertical spacing
+		    	
+		    	//2 -- 0.0921057
 		    	for (int i = 0; i < courseIDs.size(); i++) {
 		    		
 		    		CheckBox courseCheckBox = new CheckBox();
-		    		
 		    		if (courseIDs.get(i).length()>10) {
 		    			
 		    			courseCheckBox.setText(courseIDs.get(i).substring(0,10) + "...");
@@ -161,7 +166,6 @@ public class AttendanceController {
 					}
 		    		checkboxes.add(courseCheckBox);
 		        	coursesGrid.add(courseCheckBox, i%4, i/4);
-		       
 				}
 		    	courseIDFilter.setContent(coursesGrid);
 			}
@@ -172,5 +176,12 @@ public class AttendanceController {
 			filterOverlay.setVisible(false);
 			filterOpen = false;
 		}
+		
     }
+	
+	@FXML
+    private void onHomeClicked() {
+    	NavigationService.navigateTo("HomePage.fxml", "Home");
+    }
+	
 }
