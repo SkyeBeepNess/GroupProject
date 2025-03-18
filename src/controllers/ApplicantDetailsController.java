@@ -1,5 +1,6 @@
 package controllers;
 
+import dbhandlers.ApplicantDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -10,6 +11,8 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
+import models.Applicant;
+import session.UserSession;
 import services.NavigationService;
 
 import java.io.File;
@@ -19,12 +22,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class ApplicantDetailsController {
+    
     private String passportPath, diplomaPath;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private boolean isPopup1Visible = false;
-    private boolean isPopup2Visible = false;
+    
     private final Image exclamationImage = new Image(getClass().getResourceAsStream("/views/img/exclamation.png"));
     private final Image checkImage = new Image(getClass().getResourceAsStream("/views/img/check.png"));
+
+    private ApplicantDAO applicantDAO;
+    private Applicant currentApplicant;
 
     @FXML private Label passportDropArea, diplomaDropArea;
     @FXML private TextField passportField, diplomaField;
@@ -35,6 +41,24 @@ public class ApplicantDetailsController {
 
     @FXML
     private void initialize() {
+        applicantDAO = new ApplicantDAO();
+        String userId = UserSession.getInstance().getUserId();
+        currentApplicant = applicantDAO.getApplicantByUserId(userId);
+
+        if (currentApplicant != null) {
+            passportPath = currentApplicant.getPassportPath();
+            diplomaPath = currentApplicant.getDiplomaPath();
+
+            if (passportPath != null) {
+                passportField.setText(new File(passportPath).getName());
+                passportDropArea.setText("File: " + new File(passportPath).getName());
+            }
+            if (diplomaPath != null) {
+                diplomaField.setText(new File(diplomaPath).getName());
+                diplomaDropArea.setText("File: " + new File(diplomaPath).getName());
+            }
+        }
+
         configureDatePicker(dobPicker);
         configureDatePicker(docPicker);
     }
@@ -51,29 +75,6 @@ public class ApplicantDetailsController {
                 return parseDate(string);
             }
         });
-
-        TextField editor = datePicker.getEditor();
-        editor.textProperty().addListener((observable, oldValue, newValue) -> {
-            String formatted = formatDateString(newValue, oldValue);
-            if (!newValue.equals(formatted)) {
-                editor.setText(formatted);
-                editor.positionCaret(editor.getText().length());
-            }
-        });
-    }
-
-    private String formatDateString(String input, String oldValue) {
-        String digits = input.replaceAll("[^\\d]", "");
-        if (digits.length() > 8) digits = digits.substring(0, 8);
-        
-        StringBuilder formatted = new StringBuilder();
-        for (int i = 0; i < digits.length(); i++) {
-            formatted.append(digits.charAt(i));
-            if ((i == 1 || i == 3) && i + 1 < digits.length()) {
-                formatted.append("/");
-            }
-        }
-        return formatted.toString();
     }
 
     private LocalDate parseDate(String date) {
@@ -120,12 +121,12 @@ public class ApplicantDetailsController {
 
     @FXML
     private void handleDropPassport(DragEvent event) {
-        handleFileDrop(event, passportField, passportDropArea);
+        handleFileDrop(event, passportField, passportDropArea, true);
     }
 
     @FXML
     private void uploadPassport() {
-        uploadFile(passportField, passportDropArea);
+        uploadFile(passportField, passportDropArea, true);
     }
 
     @FXML
@@ -135,12 +136,12 @@ public class ApplicantDetailsController {
 
     @FXML
     private void handleDropDiploma(DragEvent event) {
-        handleFileDrop(event, diplomaField, diplomaDropArea);
+        handleFileDrop(event, diplomaField, diplomaDropArea, false);
     }
 
     @FXML
     private void uploadDiploma() {
-        uploadFile(diplomaField, diplomaDropArea);
+        uploadFile(diplomaField, diplomaDropArea, false);
     }
 
     private void handleDragOver(DragEvent event) {
@@ -150,26 +151,42 @@ public class ApplicantDetailsController {
         event.consume();
     }
 
-    private void handleFileDrop(DragEvent event, TextField textField, Label label) {
+    private void handleFileDrop(DragEvent event, TextField textField, Label label, boolean isPassport) {
         Dragboard db = event.getDragboard();
         if (db.hasFiles()) {
             File file = db.getFiles().get(0);
             textField.setText(file.getName());
             label.setText("File: " + file.getName());
+
+            if (isPassport) {
+                passportPath = file.getAbsolutePath();
+                applicantDAO.updatePassportPath(currentApplicant.getUserId(), passportPath);
+            } else {
+                diplomaPath = file.getAbsolutePath();
+                applicantDAO.updateDiplomaPath(currentApplicant.getUserId(), diplomaPath);
+            }
         }
         event.setDropCompleted(true);
         event.consume();
     }
 
-    private void uploadFile(TextField textField, Label label) {
+    private void uploadFile(TextField textField, Label label, boolean isPassport) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF, Images", "*.pdf", "*.jpg", "*.png"));
-        
+
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
             textField.setText(selectedFile.getName());
             label.setText("File: " + selectedFile.getName());
+
+            if (isPassport) {
+                passportPath = selectedFile.getAbsolutePath();
+                applicantDAO.updatePassportPath(currentApplicant.getUserId(), passportPath);
+            } else {
+                diplomaPath = selectedFile.getAbsolutePath();
+                applicantDAO.updateDiplomaPath(currentApplicant.getUserId(), diplomaPath);
+            }
         }
     }
 }

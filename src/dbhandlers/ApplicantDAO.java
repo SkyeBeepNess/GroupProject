@@ -23,17 +23,46 @@ public class ApplicantDAO {
                 return new Applicant(
                     rs.getString("UserID"),
                     rs.getString("ApplicationID"),
-                    rs.getString("Date"),
+                    rs.getString("Date of Application"),
                     rs.getString("Applicant Name"),
                     rs.getString("Certificate"),
                     rs.getString("Grade"),
                     rs.getInt("UKPRN"),
-                    rs.getString("Status")
+                    rs.getString("Status"),
+                    rs.getString("PreviousInstitution"),
+                    rs.getString("PassportPath"),
+                    rs.getString("DiplomaPath")
                 );
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean updatePassportPath(String userId, String passportPath) {
+        String sql = "UPDATE applicants SET PassportPath = ? WHERE UserID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, passportPath);
+            stmt.setString(2, userId);
+            int updatedRows = stmt.executeUpdate();
+            return updatedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateDiplomaPath(String userId, String diplomaPath) {
+        String sql = "UPDATE applicants SET DiplomaPath = ? WHERE UserID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, diplomaPath);
+            stmt.setString(2, userId);
+            int updatedRows = stmt.executeUpdate();
+            return updatedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
