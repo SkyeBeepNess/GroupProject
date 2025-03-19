@@ -39,6 +39,35 @@ public class DataBaseHelper {
         return courseIDs;
     }    
     
+    public static Student getStudentByUserID(String userID) {
+    	StringBuilder sql = new StringBuilder("SELECT a.UserID, u.Name, a.CourseID, a.StudentID, a.Attendance, a.SessionDate FROM attendance a JOIN users u ON a.UserID = u.UserID WHERE a.UserID == ?");
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    	Student student = null;
+    	try (
+                PreparedStatement stmt = connection.prepareStatement(sql.toString())) {  
+                stmt.setObject(1, userID);
+                
+                
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    String studentID = rs.getString("StudentID");
+                    String courseID = rs.getString("CourseID");
+                    String name = rs.getString("Name");
+                    student = new Student(studentID, courseID, name);
+				}
+                do {
+                	
+                    String attendance = rs.getString("Attendance");
+                    
+                    LocalDate sessionDate = LocalDate.parse(rs.getString("SessionDate"), formatter);
+                    student.addAttendance(sessionDate, attendance);
+                    
+                } while (rs.next());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+    	return student;
+	}
     
     public static List<Student> getStudentsForCourse(List<String> courseIDs, List<LocalDate> dateRange, String searchInput) {
         Map<String, Student> studentMap = new HashMap<>();
@@ -112,5 +141,8 @@ public class DataBaseHelper {
         }
         return records;
     }
+
+
+
     
 }

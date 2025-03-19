@@ -1,113 +1,121 @@
 package controllers;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 //javaFX imports
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
 
 //java imports
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 //methods imports
 import dbhandlers.DataBaseHelper;
 import models.Student;
 import services.NavigationService;
+import session.UserSession;
 
 public class AttendanceStudentController {
 	@FXML private Button homeButton;
-	@FXML private Button searchButton;
-	@FXML private Button filterButton;
-	
-	@FXML private DatePicker startDate;
-	@FXML private DatePicker endDate;
-	
-	@FXML private ScrollPane courseIDFilter;
-	@FXML private ScrollPane scrollablePane;
-	
-	@FXML private VBox coursesContainer;
-	@FXML private StackPane filterOverlay;
-	@FXML private TextField searchTextField;
 	
 	@FXML private ProgressIndicator studentAttendancePercentageIndicator;
+	@FXML private TableView<StudentAttendance> sessionsTable;
+	@FXML private TableColumn<StudentAttendance, String> sessionDateColumn;
+	@FXML private TableColumn<StudentAttendance, String> attendanceColumn;
 	
-	private List<String> courseIDs;
-	private ArrayList<CheckBox> checkboxes = new ArrayList<>();
-	private boolean filterOpen = false;
-	private ArrayList<String> checkedList = new ArrayList<String>();
-	private ArrayList<LocalDate> datesList = new ArrayList<LocalDate>();
+	@FXML private Text absentNum;
+	@FXML private Text lateNum;
+	@FXML private Text presentNum;
 	
-	@FXML
-	private void initialize() {
-		studentAttendancePercentageIndicator.setProgress(25);
-		
+    private final ObservableList<StudentAttendance> data = FXCollections.observableArrayList();
+
+	private static UserSession userSession;
+	private static Student student;
+	public final DataBaseHelper dbHelper = new DataBaseHelper();
+
+	public AttendanceStudentController() {
+		// TODO Auto-generated method stub
+		this.userSession = UserSession.getInstance();
+		this.student = dbHelper.getStudentByUserID(userSession.getUserId());
 	}
 	
 	
-	
-    @FXML
-    private void handleSearch() { //Handles the press of the search button, checks if any filteres were applied and if any text has been inputed into the search field
-        String searchInput = searchTextField.getText().trim();
-        boolean filtersApplied = !checkedList.isEmpty() || !datesList.isEmpty();
-        System.out.println("test");
-        if (searchInput.isEmpty() && !filtersApplied) {
-            coursesContainer.getChildren().clear();
-        } else if (!searchInput.isEmpty() && !filtersApplied) {
-        	System.out.println("test");
-            loadCourses(null, null, searchInput);
-        } else if (!searchInput.isEmpty() && filtersApplied) {
-            loadCourses(checkedList, datesList, searchInput);
-        }
-    }
-	
-    @FXML
-    private void handleApplyFilters() { //Handles the press of the applied filters button, checks and stores applied filter, checks if search input was provided
-    	datesList.clear();
-    	for (int i = 0; i < checkboxes.size(); i++) {
-			if (checkboxes.get(i).isSelected()) {
-				if (!checkedList.contains(checkboxes.get(i).getId())) {
-					checkedList.add(checkboxes.get(i).getId());
-				}
-			}
-			else {
-				if (checkedList.contains(checkboxes.get(i).getId())) {
-					checkedList.remove(checkboxes.get(i).getId());
-				}
-			}
-		}
-    	if (startDate.getValue() != null) {
-			datesList.add(startDate.getValue());
-			datesList.add(endDate.getValue());
-		}
-        boolean filtersApplied = !checkedList.isEmpty() || !datesList.isEmpty();
-        boolean searchDone = !searchTextField.getText().trim().isEmpty();
+	@FXML
+	private void initialize() {
+		double attPerc = student.getAttendancePercentage(null, null);
+		int red = (int) (255 - (attPerc * 2.55));  
+        int green = (int) (attPerc * 2.55);
+        ArrayList<String> testing = new ArrayList<String>();
+        testing.add("hello");
         
-        if (!filtersApplied && !searchDone) {
-            coursesContainer.getChildren().clear();
-        } else if (!datesList.isEmpty() && !checkedList.isEmpty() && !searchDone) {
-        	System.out.println("HAHAHAHA");
-            loadCourses(checkedList, datesList, null);
-        } else if (!checkedList.isEmpty() && datesList.isEmpty() && !searchDone) {
-            loadCourses(checkedList, null, null);
-        } else if (searchDone) {
-            loadCourses(checkedList, datesList, searchTextField.getText());
-        }
-        filterOverlay.setVisible(false);
-		filterOpen = false;
-    }
+		studentAttendancePercentageIndicator.setProgress(attPerc/100.0);
+		studentAttendancePercentageIndicator.setStyle("-fx-progress-color: rgb("+ red +"," + green +",0);");
+		Map<String, Integer> frequencyMap = countFrequencies(student.getAttendanceRecords());
+		
+		absentNum.setText(frequencyMap.get("Absent").toString());
+		lateNum.setText(frequencyMap.get("Late").toString());
+		presentNum.setText(frequencyMap.get("Yes").toString());
+		
+        sessionDateColumn.setCellValueFactory(new PropertyValueFactory<>("sessionDate"));
+        attendanceColumn.setCellValueFactory(new PropertyValueFactory<>("attendance"));
+        
+
+        for (Map.Entry<LocalDate, String> entry : student.getAttendanceRecords().entrySet()) {
+        	String key = entry.getKey().toString();
+        	String val = entry.getValue();
+        	
+        	if (val.contentEquals("Yes")) {
+				val = "Present";
+        	}
+        	addRow(key, val);
+		}
+        sessionsTable.setItems(data);
+		System.out.println(sessionsTable.getColumns());
+        
+	}
 	
+	public void addRow(String key, String attendance) {
+	        data.add(new StudentAttendance(key, attendance));
+	    }
+    public static Map<String, Integer> countFrequencies(Map<?, String> map) {
+        Map<String, Integer> frequencyMap = new HashMap<>();
+
+        for (String value : map.values()) {
+            frequencyMap.put(value, frequencyMap.getOrDefault(value, 0) + 1);
+        }
+
+        return frequencyMap;
+    }
+	public class StudentAttendance {
+	    private final SimpleStringProperty sessionDate;
+	    private final SimpleStringProperty attendance;
+
+	    public StudentAttendance(String key, String attendance) {
+	        this.sessionDate = new SimpleStringProperty(key);
+	        this.attendance = new SimpleStringProperty(attendance);
+	    }
+
+	    public String getSessionDate() {
+	        return sessionDate.get();
+	    }
+
+	    public String getAttendance() {
+	        return attendance.get();
+	    }
+	}
+
+	
+
+/*	
     private void loadCourses(List<String> coursesList, List<LocalDate> dateRange, String searchInput) { //Method that actually loads the attendance data, passes any filters/search to the dbHandler
         coursesContainer.getChildren().clear();
         List<String> courseIDs = (coursesList == null) ? DataBaseHelper.getAllCourseIDs() : coursesList;
@@ -148,47 +156,7 @@ public class AttendanceStudentController {
             scrollablePane.setVvalue(1.0);
         }
     }
-	
-	@FXML	
-	private void filterClicked() {
-
-
-		if (filterOpen == false) {
-			if (courseIDs == null) {
-				endDate.setValue(LocalDate.now());
-				courseIDs = DataBaseHelper.getAllCourseIDs();
-				//1 -- 0.09365
-		    	GridPane coursesGrid = new GridPane();
-		    	coursesGrid.setHgap(15); // Horizontal spacing
-		    	coursesGrid.setVgap(0); // Vertical spacing
-		    	
-		    	//2 -- 0.0921057
-		    	for (int i = 0; i < courseIDs.size(); i++) {
-		    		
-		    		CheckBox courseCheckBox = new CheckBox();
-		    		if (courseIDs.get(i).length()>10) {
-		    			
-		    			courseCheckBox.setText(courseIDs.get(i).substring(0,10) + "...");
-		    			courseCheckBox.setId(courseIDs.get(i));
-					}
-		    		else {
-		    			courseCheckBox.setText(courseIDs.get(i));
-		    			courseCheckBox.setId(courseIDs.get(i));
-					}
-		    		checkboxes.add(courseCheckBox);
-		        	coursesGrid.add(courseCheckBox, i%4, i/4);
-				}
-		    	courseIDFilter.setContent(coursesGrid);
-			}
-	    	filterOverlay.setVisible(true);
-	    	filterOpen = true;
-		}
-		else {
-			filterOverlay.setVisible(false);
-			filterOpen = false;
-		}
-		
-    }
+*/
 	
 	@FXML
     private void onHomeClicked() {
