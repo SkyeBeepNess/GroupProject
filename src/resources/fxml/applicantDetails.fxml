@@ -105,7 +105,7 @@
 									<Font name="Segoe UI Black" size="12.0" />
 								</font>
 							</TextField>
-							<Button alignment="CENTER_RIGHT" onAction="#savePersonalDetails" style="-fx-background-color: #65558F; -fx-text-fill: white; -fx-background-radius: 25;" text="Save" />
+							<Button fx:id="savePDButton" alignment="CENTER_RIGHT" onAction="#savePersonalDetails" style="-fx-background-color: #65558F; -fx-text-fill: white; -fx-background-radius: 25;" text="Save" />
 						</VBox>
 						<Button fx:id="toggleButton2" contentDisplay="LEFT" onAction="#academicQualificationPopup" prefWidth="600.0" style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: CENTER_LEFT;" text="Academic Qualification">
 							<graphic>
@@ -155,7 +155,7 @@
 									<Font name="Segoe UI Black" size="12.0" />
 								</font>
 							</TextField>
-							<Button onAction="#saveAcademicQualification" style="-fx-background-color: #65558F; -fx-text-fill: white; -fx-background-radius: 25;" text="Save" />
+							<Button fx:id="saveAQButton" onAction="#saveAcademicQualification" style="-fx-background-color: #65558F; -fx-text-fill: white; -fx-background-radius: 25;" text="Save" />
 						</VBox>
 					</children>
 				</VBox>

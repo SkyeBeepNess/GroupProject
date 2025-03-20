@@ -41,7 +41,7 @@ public class ApplicantDetailsController {
     @FXML private Label passportDropArea, diplomaDropArea;
     @FXML private TextField passportField, diplomaField;
     @FXML private DatePicker dobPicker, docPicker;
-    @FXML private Button toggleButton1, toggleButton2;
+    @FXML private Button toggleButton1, toggleButton2, savePDButton, saveAQButton;
     @FXML private ImageView pdStatusImg, aqStatusImg, aqArrowImg, pdArrowImg;;
     @FXML private VBox personalDetailsVbox, academicalQualificationVbox;
 
@@ -57,7 +57,11 @@ public class ApplicantDetailsController {
         if (isAdminView) {
             if (selectedApplicantId != null) {
                 currentApplicant = applicantDAO.getApplicantByUserId(selectedApplicantId);
-                disableEditing();
+                //disableEditing();
+                firstNameField.setEditable(false);
+                firstNameField.setFocusTraversable(false);
+                savePDButton.setVisible(false);
+                saveAQButton.setVisible(false);
             }
         } else {
             currentApplicant = applicantDAO.getApplicantByUserId(session.getUserId());
