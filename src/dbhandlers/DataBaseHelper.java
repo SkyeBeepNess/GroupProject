@@ -1,6 +1,10 @@
 package dbhandlers;
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,6 +20,7 @@ import models.Student;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class DataBaseHelper {
 	private static Connection connection;
@@ -142,7 +147,74 @@ public class DataBaseHelper {
         return records;
     }
 
-
-
-    
+    public static int checkUploadedFile(File importedFile) {
+    	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(importedFile))) {
+            String line;
+            int lineNumber = 1;
+            boolean foundData = false;
+            
+            // Process each line of the file
+            while ((line = br.readLine()) != null) {
+                // Skip blank lines
+                if (line.trim().isEmpty()) {
+                    lineNumber++;
+                    continue;
+                }
+                
+                foundData = true;
+                // Split the line into tokens by commas
+                String[] tokens = line.split(",");
+                
+                // Check that the line has exactly 4 columns
+                if (tokens.length != 4) {
+                    System.err.println("Line " + lineNumber + " has " + tokens.length + " columns; expected 4.");
+                    return 100;
+                }
+                
+                // Validate Student ID (first column): should not be empty
+                String studentID = tokens[0].trim();
+                if (studentID.isEmpty()) {
+                    System.err.println("Line " + lineNumber + " has an empty Student ID.");
+                    return 101;
+                }
+                
+                // Validate Course Code (second column): should not be empty
+                String courseCode = tokens[1].trim();
+                if (courseCode.isEmpty()) {
+                    System.err.println("Line " + lineNumber + " has an empty Course Code.");
+                    return 102;
+                }
+                
+                // Validate Date (third column): must follow the specified date format
+                String dateStr = tokens[2].trim();
+                try {
+                    LocalDate.parse(dateStr, dateFormatter);
+                } catch (DateTimeParseException e) {
+                    System.err.println("Line " + lineNumber + " has an invalid date: " + dateStr);
+                    return 103;
+                }
+                
+                // Validate Attendance Status (fourth column): must be either "Yes" or "Late"
+                String attendanceStatus = tokens[3].trim();
+                if (!attendanceStatus.equalsIgnoreCase("Yes") && !attendanceStatus.equalsIgnoreCase("Late") && !attendanceStatus.equalsIgnoreCase("Absent")) {
+                    System.err.println("Line " + lineNumber + " has an invalid attendance status: " + attendanceStatus);
+                    return 103;
+                }
+                
+                lineNumber++;
+            }
+            
+            if (!foundData) {
+                System.err.println("The file is empty.");
+                return 0;
+            }
+            
+            return 1;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 400;
+        }    	
+    }    
 }
