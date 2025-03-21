@@ -2,6 +2,7 @@ package controllers;
 
 import dbhandlers.ApplicantDAO;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
@@ -58,8 +59,7 @@ public class ApplicantDetailsController {
             if (selectedApplicantId != null) {
                 currentApplicant = applicantDAO.getApplicantByUserId(selectedApplicantId);
                 //disableEditing();
-                firstNameField.setEditable(false);
-                firstNameField.setFocusTraversable(false);
+                
                 savePDButton.setVisible(false);
                 saveAQButton.setVisible(false);
             }
@@ -163,16 +163,15 @@ public class ApplicantDetailsController {
             return null;
         }
     }
-    
+    @FXML
     private void disableEditing() {
-        firstNameField.setDisable(true);
-        lastNameField.setDisable(true);
-        nationalityField.setDisable(true);
-        certificateField.setDisable(true);
-        institutionField.setDisable(true);
-        gradeField.setDisable(true);
-        dobPicker.setDisable(true);
-        docPicker.setDisable(true);
+        for (Node ch : personalDetailsVbox.getChildren()) {
+            if (ch instanceof javafx.scene.control.TextInputControl) {
+                TextInputControl input = (TextInputControl) ch;
+                input.setEditable(false);
+                input.setFocusTraversable(false);
+            }
+        }
     }
     
     @FXML
@@ -226,7 +225,7 @@ public class ApplicantDetailsController {
         boolean isVisible = !vbox.isVisible();
         vbox.setVisible(isVisible);
         vbox.setManaged(isVisible);
-        arrowImg.setImage(isVisible ? arrowDownImage : arrowRightImage);
+        arrowImg.setImage(isVisible ?  arrowRightImage : arrowDownImage);
         updateStatusIcons();
     }
     
