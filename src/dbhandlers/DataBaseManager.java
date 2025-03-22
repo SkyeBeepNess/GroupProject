@@ -46,7 +46,7 @@ public class DataBaseManager {
         }
     }
     
-    public boolean addUser(String userId, String name, String username, String password, String role) {
+    public static boolean addUser(String userId, String name, String username, String password, String role) {
         String sql = "INSERT INTO users (UserID, Name, username, password, Role) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, userId);
@@ -82,7 +82,7 @@ public class DataBaseManager {
         return false;
     }
     
-    public String generateNewUserId() {
+    public static String generateNewUserId() {
         String newUserId = "000000000005";
         try {
             String sql = "SELECT MAX(UserID) FROM users";
@@ -99,7 +99,7 @@ public class DataBaseManager {
         return newUserId;
     }
     
-    public void loadApplicantsFromCSV(String csvFilePath) {
+    public static void loadApplicantsFromCSV(String csvFilePath) {
         String insertApplicantSQL = "INSERT INTO applicants (\"Applicant Name\", \"Date of Application\", \"Certificate\", \"Grade\", \"UKPRN\", \"ApplicationID\", \"Status\", \"UserID\") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath));
@@ -136,21 +136,32 @@ public class DataBaseManager {
                 pstmtApplicant.setString(7, status);
                 pstmtApplicant.setString(8, userID);
                 pstmtApplicant.addBatch();
+                
+                String baseUsername = applicantName.toLowerCase().replace(" ", "_");
+                String finalUsername = baseUsername;
+                int counter = 1;
+                while (getInstance().userExists(finalUsername)) {
+                    finalUsername = baseUsername + "_" + counter++;
+                }
+
+                addUser(userID, applicantName, finalUsername, userID.substring(userID.length() - 6), "applicant");
             }
 
             pstmtApplicant.executeBatch();
             connection.commit();
             
-            generateUniqueUsernamesAndInsertApplicantsIntoUsers();
+            
+            
+            //generateUniqueUsernamesAndInsertApplicantsIntoUsers();
 
-            System.out.println("CSV успешно загружен в базу данных!");
+            System.out.println("Data base updated!");
 
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void generateUniqueUsernamesAndInsertApplicantsIntoUsers() throws SQLException {
+    private static void generateUniqueUsernamesAndInsertApplicantsIntoUsers() throws SQLException {
         String addColumnSQL = "ALTER TABLE applicants ADD COLUMN username_temp TEXT";
         String updateUsernameSQL = """
             UPDATE applicants 
@@ -171,7 +182,8 @@ public class DataBaseManager {
                 SUBSTR(UserID, -6) 
             FROM applicants 
             WHERE NOT EXISTS (
-                SELECT 1 FROM users u WHERE u.UserID = applicants.UserID
+                SELECT 1 FROM users u WHERE u.UserID = applicants.UserID 
+                OR u.username = applicants.username_temp
             )
         """;
         String dropColumnSQL = "ALTER TABLE applicants DROP COLUMN username_temp";

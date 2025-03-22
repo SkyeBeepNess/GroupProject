@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.File;
 
 import dbhandlers.ApplicantDAO;
+import dbhandlers.DataBaseManager;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -45,7 +46,6 @@ public class ApplicantListController {
     @FXML private Button viewDetailsButton;
     @FXML private Button rejectButton;
     @FXML private Button acceptButton;
-    //@FXML private StackPane fileUploadOverlay;
     
     private final ApplicantDAO applicantDAO = new ApplicantDAO();
     private final ObservableList<Applicant> applicants = FXCollections.observableArrayList();
@@ -53,7 +53,6 @@ public class ApplicantListController {
     @FXML private StackPane fileUploadOverlay;
     @FXML private VBox selectedFileBox;
     @FXML private Hyperlink browseLink;
-    //private File selectedFile;
     private ObjectProperty<File> selectedFile = new SimpleObjectProperty<>(null);
     @FXML private Text fileName;
 	@FXML private Text fileSize;
@@ -120,7 +119,7 @@ public class ApplicantListController {
     	fileUploadOverlay.setVisible(false);
     	selectedFileBox.setVisible(false);
 	}
-    /*
+   
     @FXML
     private void handleBrowseLink() {
         FileChooser fileChooser = new FileChooser();
@@ -135,25 +134,7 @@ public class ApplicantListController {
         File file = fileChooser.showOpenDialog(window);
 
         if (file != null) {
-            handleFileSelected(file);
-        }
-    }
-    */
-    @FXML
-    private void handleBrowseLink() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select File(s)");
-
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
-            new FileChooser.ExtensionFilter("Excel Files", "*.xls", "*.xlsx")
-        );
-
-        Window window = browseLink.getScene().getWindow();
-        File file = fileChooser.showOpenDialog(window);
-
-        if (file != null) {
-            selectedFile.set(file); // только сеттер — UI сам обновится через listener
+            selectedFile.set(file);
         }
     }
 
@@ -165,31 +146,6 @@ public class ApplicantListController {
         }
         event.consume();
     }
-    /*
-    @FXML
-    private void handleDragDrop(DragEvent event) {
-        Dragboard db = event.getDragboard();
-        if (db.hasFiles()) {
-        	if (db.getFiles().size()>1) {
-        		UIServices.showAlert(AlertType.ERROR, "File Import Error", "Please select only one file");
-			}
-        	else {
-            	File file = db.getFiles().get(0);
-            	String fileName = selectedFile.getName().toLowerCase();
-                if (fileName.endsWith(".csv") || fileName.endsWith(".xls") || fileName.endsWith(".xlsx")) {
-                    handleFileSelected(file);
-                } else {
-                    System.out.println("Unsupported file format: " + fileName);
-                }
-			}
-            
-        }
-        
-        
-        event.setDropCompleted(db.hasFiles());
-        event.consume();
-    }
-    */
     
     @FXML
     private void handleDragDrop(DragEvent event) {
@@ -212,18 +168,6 @@ public class ApplicantListController {
         event.consume();
     }
 
-    
-    /*
-    @FXML
-    private void handleFileSelected(File file) {
-    	selectedFile.set(file);
-    	selectedFileBox.setVisible(true);
-		fileName.setText(selectedFile.getName());
-		fileSize.setText("File size: " + file.length()/1000 + "KB");
-
-	}
-    */
-    
     @FXML
     private void handleFileSelected(File file) {
         selectedFileBox.setVisible(true);
@@ -231,18 +175,6 @@ public class ApplicantListController {
         fileSize.setText("File size: " + file.length() / 1000 + "KB");
     }
 
-    /*
-    @FXML
-    private void handleSubmitFiles() {
-    	if (selectedFile == null) {
-    		UIServices.showAlert(AlertType.ERROR, "File import error", "Please choose a file to upload");
-    	}
-    	if (selectedFile != null) {
-    		System.out.println("hihihi");
-		}
-    }
-    */
-    
     @FXML
     private void handleSubmitFiles() {
         File file = selectedFile.get();
@@ -251,7 +183,8 @@ public class ApplicantListController {
             return;
         }
 
-        System.out.println("hihihi: " + file.getName());
+        DataBaseManager.loadApplicantsFromCSV(selectedFile.get().getAbsolutePath());
+        cancelCSVImport();
     }
 
     
