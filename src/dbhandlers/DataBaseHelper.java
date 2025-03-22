@@ -92,6 +92,26 @@ public class DataBaseHelper {
     	return student;
 	}
     
+    public static String getUserIDByStudentID(String StudentID) {
+    	StringBuilder sql = new StringBuilder("SELECT DISTINCT UserID FROM attendance WHERE StudentID == ?");
+    	String userID = null;
+    	try (
+                PreparedStatement stmt = connection.prepareStatement(sql.toString())) {  
+                stmt.setObject(1, StudentID);
+                
+                
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    userID = rs.getString("UserID");
+
+				}
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+		return userID;
+	}
+    
     public static List<Student> getStudentsForCourse(List<String> courseIDs, List<LocalDate> dateRange, String searchInput) {
         Map<String, Student> studentMap = new HashMap<>();
         StringBuilder sql = new StringBuilder("SELECT a.UserID, u.Name, a.CourseID, a.StudentID, a.Attendance, a.SessionDate FROM attendance a JOIN users u ON a.UserID = u.UserID");
@@ -164,10 +184,37 @@ public class DataBaseHelper {
         }
         return records;
     }
-
-    public static int checkUploadedFile(File importedFile) {
-    	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    
+    public static List<String> getManagedStudents(List<String> managedCourses) {
+    	List<String> managedStudents = new ArrayList<>();
+    	StringBuilder sql = new StringBuilder("SELECT StudentID FROM attendance");
+    	List<Object> parameters = new ArrayList<>();
+        sql.append(" WHERE CourseID IN (");
+        sql.append(String.join(",", Collections.nCopies(managedCourses.size(), "?")));
+        sql.append(")");
+        parameters.addAll(managedCourses);
         
+        try (PreparedStatement stmt = connection.prepareStatement(sql.toString())){
+        	for (int i = 0; i < parameters.size(); i++) {
+                stmt.setObject(i + 1, parameters.get(i));
+            }
+			ResultSet rs = stmt.executeQuery();
+			
+			
+			while (rs.next()) {
+				managedStudents.add(rs.getString("StudentID"));
+			}
+			
+		} catch (Exception e) {
+            e.printStackTrace();
+		}
+        return managedStudents;
+	}
+
+    public static int checkUploadedFile(File importedFile, List<String> managedCourses) {
+    	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    	List<String> managedStudents = getManagedStudents(managedCourses);
+    	
         try (BufferedReader br = new BufferedReader(new FileReader(importedFile))) {
             String line;
             int lineNumber = 1;
@@ -182,7 +229,9 @@ public class DataBaseHelper {
                 }
                 
                 foundData = true;
-                // Split the line into tokens by commas
+                
+                
+
                 String[] tokens = line.split(",");
                 
                 // Check that the line has exactly 4 columns
@@ -193,10 +242,16 @@ public class DataBaseHelper {
                 
                 // Validate Student ID (first column): should not be empty
                 String studentID = tokens[0].trim();
+                
+                
                 if (studentID.isEmpty()) {
                     System.err.println("Line " + lineNumber + " has an empty Student ID.");
                     return 101;
                 }
+                else if (managedStudents.contains(studentID) == false) {
+                	System.err.println("Line " + lineNumber + " has a wrong Student ID.");
+                    return 101;
+				}
                 
                 // Validate Course Code (second column): should not be empty
                 String courseCode = tokens[1].trim();
@@ -204,6 +259,10 @@ public class DataBaseHelper {
                     System.err.println("Line " + lineNumber + " has an empty Course Code.");
                     return 102;
                 }
+                else if (managedCourses.contains(courseCode) == false) {
+                	System.err.println("Line " + lineNumber + " has an wrong Course Code.");
+                    return 102;
+				}
                 
                 // Validate Date (third column): must follow the specified date format
                 String dateStr = tokens[2].trim();
@@ -235,4 +294,47 @@ public class DataBaseHelper {
             return 400;
         }    	
     }    
+    
+    public static boolean uploadCSVtoDB(File importedFile) {
+    	
+    	
+    	
+    	
+    	String sql = "INSERT INTO attendance (StudentID, CourseID, SessionDate, Attendance, UserID) VALUES (?, ?, ?, ?, ?)";
+    	try (PreparedStatement stmt = connection.prepareStatement(sql.toString())) {
+    		connection.setAutoCommit(false);
+    		try (BufferedReader lineReader = new BufferedReader(new FileReader(importedFile))) {
+                String lineText;
+                int count = 0;
+                // Skip header if present
+
+                while ((lineText = lineReader.readLine()) != null) {
+                	if (lineText.trim().isEmpty() == false) {
+                		String[] data = lineText.split(",");
+                        // If the CSV has exactly 3 columns per row, otherwise adjust accordingly.
+                       
+                        stmt.setString(1, data[0]);
+                        stmt.setString(2, data[1]);
+                        stmt.setString(3, data[2]);
+                        stmt.setString(4, data[3]);
+                        stmt.setString(5, getUserIDByStudentID(data[0]));
+                        stmt.addBatch();
+                        count++;
+					}
+                	
+                }
+                stmt.executeBatch();
+                connection.commit();
+                System.out.println("Inserted " + count + " rows.");
+            } catch (IOException ex) {
+                System.err.println("Error reading CSV file");
+                ex.printStackTrace();
+            }
+        } catch (SQLException e) {
+            System.err.println("Database error");
+            e.printStackTrace();
+        }
+		return true;
+
+	}
 }

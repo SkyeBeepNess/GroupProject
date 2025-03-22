@@ -185,12 +185,12 @@
                            </Hyperlink>
                         </children>
                      </TextFlow>
-                     <Text fill="#00000052" strokeType="OUTSIDE" strokeWidth="0.0" text="Supported file format: CSV, XLS, XLSX" />
+                     <Text fill="#00000052" strokeType="OUTSIDE" strokeWidth="0.0" text="Supported file format: CSV" />
                   </children>
                </VBox>
                <AnchorPane prefHeight="76.0" prefWidth="500.0">
                   <children>
-                     <Button layoutX="373.0" layoutY="30.0" mnemonicParsing="false" onMouseClicked="#handleSubmitFiles" prefHeight="40.0" prefWidth="105.0" style="-fx-background-color: #9747FF; -fx-background-radius: 20;" text="Submit" textFill="WHITE">
+                     <Button fx:id="submitFileButton" layoutX="373.0" layoutY="30.0" mnemonicParsing="false" onMouseClicked="#handleSubmitFiles" prefHeight="40.0" prefWidth="105.0" style="-fx-background-color: #9747FF; -fx-background-radius: 20;" text="Submit" textFill="WHITE">
                         <font>
                            <Font name="Segoe UI" size="16.0" />
                         </font>
@@ -221,7 +221,7 @@
                                              <Font name="Segoe UI" size="11.0" />
                                           </font>
                                        </Text>
-                                       <Hyperlink text="View" underline="true">
+                                       <Hyperlink onAction="#onViewFileClicked" text="View" underline="true">
                                           <font>
                                              <Font name="Segoe UI" size="13.0" />
                                           </font>
@@ -231,11 +231,15 @@
                                        <Insets left="3.0" right="3.0" />
                                     </HBox.margin>
                                  </VBox>
-                                 <ImageView fitHeight="31.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                       <Image url="@../img/trash.png" />
-                                    </image>
-                                 </ImageView>
+                                 <Button mnemonicParsing="false" onAction="#onDeleteFileClicked" style="-fx-background-color: transparent;">
+                                    <graphic>
+                                       <ImageView fitHeight="31.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                          <image>
+                                             <Image url="@../img/trash.png" />
+                                          </image>
+                                       </ImageView>
+                                    </graphic>
+                                 </Button>
                               </children>
                               <padding>
                                  <Insets bottom="9.0" left="9.0" right="9.0" top="9.0" />
