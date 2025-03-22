@@ -31,6 +31,7 @@ import java.util.Map;
 
 //methods imports
 import dbhandlers.DataBaseHelper;
+import models.Admin;
 import models.Student;
 import services.NavigationService;
 import session.UserSession;
@@ -66,12 +67,37 @@ public class AttendanceAdminController {
 	private File selectedFile;
 	public final DataBaseHelper dbHelper = new DataBaseHelper();
 	private static UserSession userSession;
+	private Admin currentAdmin;
 	
 	@FXML
 	private void initialize() {
-		//courseIDs = dbHelper.getAllCourseIDs();
 		this.userSession = UserSession.getInstance();
-		userSession.getRole();
+		this.currentAdmin = new Admin(userSession.getUserId(), dbHelper.getManagedCourses(userSession.getUserId()), userSession.getRole());
+		System.out.println(currentAdmin.getIsSuper());
+		courseIDs = currentAdmin.getManagedCourses();
+		endDate.setValue(LocalDate.now());    	
+    	coursesGrid.setHgap(15); // Horizontal spacing
+    	coursesGrid.setVgap(0); // Vertical spacing
+    	
+    	//2 -- 0.0921057
+    	for (int i = 0; i < courseIDs.size(); i++) {
+    		
+    		CheckBox courseCheckBox = new CheckBox();
+    		if (courseIDs.get(i).length()>10) {
+    			
+    			courseCheckBox.setText(courseIDs.get(i).substring(0,10) + "...");
+    			courseCheckBox.setId(courseIDs.get(i));
+			}
+    		else {
+    			courseCheckBox.setText(courseIDs.get(i));
+    			courseCheckBox.setId(courseIDs.get(i));
+			}
+    		checkboxes.add(courseCheckBox);
+    		GridPane.setColumnIndex(courseCheckBox, i % 4);
+            GridPane.setRowIndex(courseCheckBox, i / 4);
+		}
+    	coursesGrid.getChildren().addAll(checkboxes);
+		courseIDFilter.setContent(coursesGrid);
 	}
 	
     @FXML
@@ -90,6 +116,8 @@ public class AttendanceAdminController {
     @FXML
     private void handleApplyFilters() { //Handles the press of the applied filters button, checks and stores applied filter, checks if search input was provided
     	datesList.clear();
+    	coursesContainer.getChildren().clear();
+    	System.out.println("test");
     	for (int i = 0; i < checkboxes.size(); i++) {
 			if (checkboxes.get(i).isSelected()) {
 				if (!checkedList.contains(checkboxes.get(i).getId())) {
@@ -102,6 +130,7 @@ public class AttendanceAdminController {
 				}
 			}
 		}
+    	System.out.println(checkedList);
     	if (startDate.getValue() != null) {
 			datesList.add(startDate.getValue());
 			datesList.add(endDate.getValue());
@@ -115,6 +144,9 @@ public class AttendanceAdminController {
             loadCourses(checkedList, datesList, null);
         } else if (!checkedList.isEmpty() && datesList.isEmpty() && !searchDone) {
             loadCourses(checkedList, null, null);
+        } else if (searchDone && !checkedList.isEmpty() && datesList.isEmpty()) {
+            loadCourses(checkedList, null, searchTextField.getText());
+            System.out.println("HAHAHAHAHAH");
         } else if (searchDone) {
             loadCourses(checkedList, datesList, searchTextField.getText());
         }
@@ -124,8 +156,11 @@ public class AttendanceAdminController {
 	
     private void loadCourses(List<String> coursesList, List<LocalDate> dateRange, String searchInput) { //Method that actually loads the attendance data, passes any filters/search to the dbHandler
         coursesContainer.getChildren().clear();
-        List<String> courseIDs = (coursesList == null) ? dbHelper.getAllCourseIDs() : coursesList;
-        
+        System.out.println(coursesList.isEmpty());
+        List<String> courseIDs = (coursesList.isEmpty()) ? currentAdmin.getManagedCourses() : coursesList;
+        System.out.println("------");
+        System.out.println(courseIDs);
+        System.out.println("------");
         List<Student> students = dbHelper.getStudentsForCourse(courseIDs, dateRange, searchInput);
         Map<String, List<Student>> studentsByCourse = new HashMap<>();
                 
@@ -167,36 +202,8 @@ public class AttendanceAdminController {
 	@FXML	
 	private void filterClicked() {
 		if (filterOpen == false) {
-			if (courseIDs == null) {
-				
-				endDate.setValue(LocalDate.now());
-				courseIDs = dbHelper.getAllCourseIDs();
-				//1 -- 0.09365
-		    	
-		    	coursesGrid.setHgap(15); // Horizontal spacing
-		    	coursesGrid.setVgap(0); // Vertical spacing
-		    	
-		    	//2 -- 0.0921057
-		    	for (int i = 0; i < courseIDs.size(); i++) {
-		    		
-		    		CheckBox courseCheckBox = new CheckBox();
-		    		if (courseIDs.get(i).length()>10) {
-		    			
-		    			courseCheckBox.setText(courseIDs.get(i).substring(0,10) + "...");
-		    			courseCheckBox.setId(courseIDs.get(i));
-					}
-		    		else {
-		    			courseCheckBox.setText(courseIDs.get(i));
-		    			courseCheckBox.setId(courseIDs.get(i));
-					}
-		    		checkboxes.add(courseCheckBox);
-		    		GridPane.setColumnIndex(courseCheckBox, i % 4);
-	                GridPane.setRowIndex(courseCheckBox, i / 4);
-				}
-		    	
-			}
-			coursesGrid.getChildren().addAll(checkboxes);
-			courseIDFilter.setContent(coursesGrid);
+			
+			
 	    	filterOverlay.setVisible(true);
 	    	filterOpen = true;
 		}

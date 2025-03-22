@@ -11,11 +11,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import models.Admin;
 import models.Student;
 
 import java.time.LocalDate;
@@ -29,6 +31,22 @@ public class DataBaseHelper {
         this.connection = DataBaseManager.getInstance().getConnection();
     }
 	
+    public static List<String> getManagedCourses(String userID) {
+    	List<String> courseIDs = new ArrayList<>();
+        String sql = "SELECT Courses FROM courses_access_permissions WHERE UserId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql.toString())){
+			stmt.setObject(1, userID);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+                courseIDs.addAll(Arrays.asList(rs.getString("Courses").split(",")));
+			}
+			
+		} catch (Exception e) {
+            e.printStackTrace();
+		}
+        return courseIDs;
+
+	}
 
     public static List<String> getAllCourseIDs() {
         List<String> courseIDs = new ArrayList<>();
