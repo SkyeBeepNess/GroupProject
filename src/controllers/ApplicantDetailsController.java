@@ -1,6 +1,8 @@
 package controllers;
 
 import dbhandlers.ApplicantDAO;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -11,13 +13,16 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 import models.Applicant;
 import session.UserSession;
 import services.NavigationService;
 import services.UIServices;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -45,6 +50,11 @@ public class ApplicantDetailsController {
     @FXML private Button toggleButton1, toggleButton2, savePDButton, saveAQButton;
     @FXML private ImageView pdStatusImg, aqStatusImg, aqArrowImg, pdArrowImg;;
     @FXML private VBox personalDetailsVbox, academicalQualificationVbox;
+    @FXML private VBox selectedPassportBox;
+    @FXML private Hyperlink browseLink, browsePassportLink;
+    private ObjectProperty<File> selectedPassportFile = new SimpleObjectProperty<>(null);
+    @FXML private Text fileName;
+	@FXML private Text fileSize;
 
     @FXML
     private void initialize() {
@@ -73,7 +83,21 @@ public class ApplicantDetailsController {
         configureDatePicker(dobPicker);
         configureDatePicker(docPicker);
         updateStatusIcons();
+        
+        selectedPassportFile.addListener((obs, oldFile, newFile) -> {
+            if (newFile != null) {
+            	passportDropArea.setVisible(false);
+                selectedPassportBox.setVisible(true);
+                fileName.setText(newFile.getName());
+                fileSize.setText("File size: " + newFile.length() / 1000 + "KB");
+            } else {
+                selectedPassportBox.setVisible(false);
+                passportDropArea.setVisible(true);
+            }
+        });
+        
     }
+    
 
     private void fillFieldsWithApplicantData() {
         firstNameField.setText(currentApplicant.getName() != null ? currentApplicant.getName() : "");
@@ -279,22 +303,25 @@ public class ApplicantDetailsController {
         event.consume();
     }
 
-    private void handleFileDrop(DragEvent event, TextField textField, Label label, boolean isPassport) {
+    private void handleFileDrop(DragEvent event, TextField textField, Label label, boolean isPassport) {     
+        
         Dragboard db = event.getDragboard();
         if (db.hasFiles()) {
-            File file = db.getFiles().get(0);
-            textField.setText(file.getName());
-            label.setText("File: " + file.getName());
-
-            if (isPassport) {
-                passportPath = file.getAbsolutePath();
-                applicantDAO.updatePassportPath(currentApplicant.getUserId(), passportPath);
+            if (db.getFiles().size() > 1) {
+                UIServices.showAlert(AlertType.ERROR, "File Import Error", "Please select only one file");
             } else {
-                diplomaPath = file.getAbsolutePath();
-                applicantDAO.updateDiplomaPath(currentApplicant.getUserId(), diplomaPath);
+                File file = db.getFiles().get(0);
+                if (isPassport) {
+                    passportPath = file.getAbsolutePath();
+                    applicantDAO.updatePassportPath(currentApplicant.getUserId(), passportPath);
+                    selectedPassportFile.set(file);
+                } else {
+                    diplomaPath = file.getAbsolutePath();
+                    applicantDAO.updateDiplomaPath(currentApplicant.getUserId(), diplomaPath);
+                }
             }
         }
-        event.setDropCompleted(true);
+        event.setDropCompleted(db.hasFiles());
         event.consume();
     }
 
@@ -303,18 +330,37 @@ public class ApplicantDetailsController {
         fileChooser.setTitle("Select File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF, Images", "*.pdf", "*.jpg", "*.png"));
 
-        File selectedFile = fileChooser.showOpenDialog(null);
-        if (selectedFile != null) {
-            textField.setText(selectedFile.getName());
-            label.setText("File: " + selectedFile.getName());
-
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
             if (isPassport) {
-                passportPath = selectedFile.getAbsolutePath();
+                passportPath = file.getAbsolutePath();
                 applicantDAO.updatePassportPath(currentApplicant.getUserId(), passportPath);
+                selectedPassportFile.set(file);
             } else {
-                diplomaPath = selectedFile.getAbsolutePath();
+                diplomaPath = file.getAbsolutePath();
                 applicantDAO.updateDiplomaPath(currentApplicant.getUserId(), diplomaPath);
             }
         }
     }
+    
+    @FXML
+    private void onPassportViewFileClicked() {
+    	if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().open(selectedPassportFile.get());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Desktop not supported");
+        }
+    }
+    
+    @FXML
+    private void onDeletePassportClicked() {
+    	selectedPassportFile.set(null);
+    	selectedPassportBox.setVisible(false);
+    	
+    }
+    
 }

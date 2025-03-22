@@ -97,6 +97,58 @@
 							</Label>
 							<DatePicker fx:id="dobPicker" prefWidth="200.0" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
 							<Label text="Passport File:" />
+                     <VBox fx:id="selectedPassportBox" prefWidth="100.0">
+                        <children>
+                           <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Selected file:">
+                              <font>
+                                 <Font name="Segoe UI" size="14.0" />
+                              </font>
+                           </Text>
+                           <HBox alignment="CENTER" prefWidth="200.0" style="-fx-background-color: #EDEBEB; -fx-background-radius: 20;">
+                              <children>
+                                 <ImageView fitHeight="31.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                       <Image url="@../img/file.png" />
+                                    </image>
+                                 </ImageView>
+                                 <VBox prefWidth="100.0">
+                                    <children>
+                                       <Text fx:id="passportFileName" strokeType="OUTSIDE" strokeWidth="0.0" text="File name">
+                                          <font>
+                                             <Font name="Segoe UI" size="12.0" />
+                                          </font>
+                                       </Text>
+                                       <Text fx:id="paasportFileSize" fill="#5f5f5f" strokeType="OUTSIDE" strokeWidth="0.0" text="Size: 0 mb">
+                                          <font>
+                                             <Font name="Segoe UI" size="11.0" />
+                                          </font>
+                                       </Text>
+                                       <Hyperlink onAction="#onPassportViewFileClicked" text="View" underline="true">
+                                          <font>
+                                             <Font name="Segoe UI" size="13.0" />
+                                          </font>
+                                       </Hyperlink>
+                                    </children>
+                                    <HBox.margin>
+                                       <Insets left="3.0" right="3.0" />
+                                    </HBox.margin>
+                                 </VBox>
+                                 <Button mnemonicParsing="false" onAction="#onDeletePassportClicked" style="-fx-background-color: transparent;">
+                                    <graphic>
+                                       <ImageView fitHeight="31.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                          <image>
+                                             <Image url="@../img/trash.png" />
+                                          </image>
+                                       </ImageView>
+                                    </graphic>
+                                 </Button>
+                              </children>
+                              <padding>
+                                 <Insets bottom="9.0" left="9.0" right="9.0" top="9.0" />
+                              </padding>
+                           </HBox>
+                        </children>
+                     </VBox>
 							<Label fx:id="passportDropArea" onDragDropped="#handleDropPassport" onDragOver="#handleDragOverPassport" onMouseClicked="#uploadPassport" prefHeight="150.0" prefWidth="300.0" style="-fx-background-color: #ECECEC; -fx-padding: 10; -fx-alignment: center; -fx-background-radius: 25;">
 								<font>
 									<Font name="Segoe UI Black" size="12.0" />
@@ -116,7 +168,7 @@
                                              <Font name="Segoe UI" size="14.0" />
                                           </font>
                                        </Text>
-                                       <Hyperlink fx:id="browseLink" onMouseClicked="#uploadPassport" text="select from files" underline="true">
+                                       <Hyperlink fx:id="browsePassportLink" onMouseClicked="#uploadPassport" text="select from files" underline="true">
                                           <font>
                                              <Font name="Segoe UI" size="14.0" />
                                           </font>
@@ -172,16 +224,36 @@
 							</Label>
 							<DatePicker fx:id="docPicker" prefWidth="200.0" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
 							<Label text="Diploma File:" />
-							<Label fx:id="diplomaDropArea" onDragDropped="#handleDropDiploma" onDragOver="#handleDragOverDiploma" onMouseClicked="#uploadDiploma" prefHeight="150.0" prefWidth="300.0" style="-fx-background-color: #ECECEC; -fx-padding: 10; -fx-alignment: center; -fx-background-radius: 25;" text="Drag and Drop or Click to Upload">
-								<font>
-									<Font name="Segoe UI Black" size="12.0" />
-								</font>
-							</Label>
-							<TextField fx:id="diplomaField" editable="false" visible="false">
-								<font>
-									<Font name="Segoe UI Black" size="12.0" />
-								</font>
-							</TextField>
+                     <Label fx:id="diplomaDropArea" onDragDropped="#handleDropDiploma" onDragOver="#handleDragOverDiploma" onMouseClicked="#uploadDiploma" prefHeight="150.0" prefWidth="300.0" style="-fx-background-color: #ECECEC; -fx-padding: 10; -fx-alignment: center; -fx-background-radius: 25;">
+                        <font>
+                           <Font name="Segoe UI Black" size="12.0" />
+                        </font>
+                        <graphic>
+                           <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                              <children>
+                                 <ImageView fitHeight="68.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                       <Image url="@../img/cloud.png" />
+                                    </image>
+                                 </ImageView>
+                                 <TextFlow textAlignment="CENTER">
+                                    <children>
+                                       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Drag and drop or">
+                                          <font>
+                                             <Font name="Segoe UI" size="14.0" />
+                                          </font>
+                                       </Text>
+                                       <Hyperlink fx:id="browseLinkDiploma" onMouseClicked="#uploadDiploma" text="select from files" underline="true">
+                                          <font>
+                                             <Font name="Segoe UI" size="14.0" />
+                                          </font>
+                                       </Hyperlink>
+                                    </children>
+                                 </TextFlow>
+                              </children>
+                           </VBox>
+                        </graphic>
+                     </Label>
 							<Button fx:id="saveAQButton" onAction="#saveAcademicQualification" style="-fx-background-color: #65558F; -fx-text-fill: white; -fx-background-radius: 25;" text="Save" />
 						</VBox>
 					</children>
