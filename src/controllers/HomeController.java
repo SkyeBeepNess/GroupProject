@@ -47,7 +47,7 @@ public class HomeController {
 	private void onAttendanceClicked() {
 		 UserSession session = UserSession.getInstance();
 		
-		if ("admin".equals(session.getRole())) {
+		if ("admin".equals(session.getRole()) || "superadmin".equals(session.getRole())) {
 			NavigationService.navigateTo("attendancePageAdmin.fxml", "Attendance - Admin");
 		} else if ("student".equals(session.getRole())) {
 			NavigationService.navigateTo("attendancePageStudent.fxml", "Attendance - Student");

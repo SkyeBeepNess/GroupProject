@@ -1,5 +1,7 @@
 package controllers;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 //javaFX imports
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -21,6 +24,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
+import java.awt.Desktop;
 import java.io.File;
 //java imports
 import java.time.LocalDate;
@@ -31,8 +35,11 @@ import java.util.Map;
 
 //methods imports
 import dbhandlers.DataBaseHelper;
+import dbhandlers.DataBaseManager;
+import models.Admin;
 import models.Student;
 import services.NavigationService;
+import services.UIServices;
 import session.UserSession;
 
 public class AttendanceAdminController {
@@ -63,15 +70,58 @@ public class AttendanceAdminController {
 	private boolean filterOpen = false;
 	private ArrayList<String> checkedList = new ArrayList<String>();
 	private ArrayList<LocalDate> datesList = new ArrayList<LocalDate>();
-	private File selectedFile;
 	public final DataBaseHelper dbHelper = new DataBaseHelper();
 	private static UserSession userSession;
+	private Admin currentAdmin;
+	
+	private String csvFilePath;
+    private ObjectProperty<File> selectedFile = new SimpleObjectProperty<>(null);
+  
+	@FXML private Button submitFileButton;
 	
 	@FXML
 	private void initialize() {
-		//courseIDs = dbHelper.getAllCourseIDs();
 		this.userSession = UserSession.getInstance();
-		userSession.getRole();
+		this.currentAdmin = new Admin(userSession.getUserId(), dbHelper.getManagedCourses(userSession.getUserId()), userSession.getRole());
+		System.out.println(currentAdmin.getIsSuper());
+		courseIDs = currentAdmin.getManagedCourses();
+		endDate.setValue(LocalDate.now());    	
+    	coursesGrid.setHgap(15); // Horizontal spacing
+    	coursesGrid.setVgap(0); // Vertical spacing
+    	
+    	//2 -- 0.0921057
+    	for (int i = 0; i < courseIDs.size(); i++) {
+    		
+    		CheckBox courseCheckBox = new CheckBox();
+    		if (courseIDs.get(i).length()>10) {
+    			
+    			courseCheckBox.setText(courseIDs.get(i).substring(0,10) + "...");
+    			courseCheckBox.setId(courseIDs.get(i));
+			}
+    		else {
+    			courseCheckBox.setText(courseIDs.get(i));
+    			courseCheckBox.setId(courseIDs.get(i));
+			}
+    		checkboxes.add(courseCheckBox);
+    		GridPane.setColumnIndex(courseCheckBox, i % 4);
+            GridPane.setRowIndex(courseCheckBox, i / 4);
+		}
+    	coursesGrid.getChildren().addAll(checkboxes);
+		courseIDFilter.setContent(coursesGrid);
+		
+		submitFileButton.setDisable(true);
+
+        
+        //FILE
+        selectedFile.addListener((obs, oldFile, newFile) -> {
+            if (newFile != null) {
+                handleFileSelected(newFile);
+                submitFileButton.setDisable(false);
+            } else {
+                selectedFileBox.setVisible(false);
+                submitFileButton.setDisable(true);
+            }
+        });
 	}
 	
     @FXML
@@ -90,6 +140,8 @@ public class AttendanceAdminController {
     @FXML
     private void handleApplyFilters() { //Handles the press of the applied filters button, checks and stores applied filter, checks if search input was provided
     	datesList.clear();
+    	coursesContainer.getChildren().clear();
+    	System.out.println("test");
     	for (int i = 0; i < checkboxes.size(); i++) {
 			if (checkboxes.get(i).isSelected()) {
 				if (!checkedList.contains(checkboxes.get(i).getId())) {
@@ -102,6 +154,7 @@ public class AttendanceAdminController {
 				}
 			}
 		}
+    	System.out.println(checkedList);
     	if (startDate.getValue() != null) {
 			datesList.add(startDate.getValue());
 			datesList.add(endDate.getValue());
@@ -115,6 +168,9 @@ public class AttendanceAdminController {
             loadCourses(checkedList, datesList, null);
         } else if (!checkedList.isEmpty() && datesList.isEmpty() && !searchDone) {
             loadCourses(checkedList, null, null);
+        } else if (searchDone && !checkedList.isEmpty() && datesList.isEmpty()) {
+            loadCourses(checkedList, null, searchTextField.getText());
+            System.out.println("HAHAHAHAHAH");
         } else if (searchDone) {
             loadCourses(checkedList, datesList, searchTextField.getText());
         }
@@ -124,8 +180,9 @@ public class AttendanceAdminController {
 	
     private void loadCourses(List<String> coursesList, List<LocalDate> dateRange, String searchInput) { //Method that actually loads the attendance data, passes any filters/search to the dbHandler
         coursesContainer.getChildren().clear();
-        List<String> courseIDs = (coursesList == null) ? dbHelper.getAllCourseIDs() : coursesList;
-        
+
+        List<String> courseIDs = (coursesList.isEmpty()) ? currentAdmin.getManagedCourses() : coursesList;
+
         List<Student> students = dbHelper.getStudentsForCourse(courseIDs, dateRange, searchInput);
         Map<String, List<Student>> studentsByCourse = new HashMap<>();
                 
@@ -167,36 +224,8 @@ public class AttendanceAdminController {
 	@FXML	
 	private void filterClicked() {
 		if (filterOpen == false) {
-			if (courseIDs == null) {
-				
-				endDate.setValue(LocalDate.now());
-				courseIDs = dbHelper.getAllCourseIDs();
-				//1 -- 0.09365
-		    	
-		    	coursesGrid.setHgap(15); // Horizontal spacing
-		    	coursesGrid.setVgap(0); // Vertical spacing
-		    	
-		    	//2 -- 0.0921057
-		    	for (int i = 0; i < courseIDs.size(); i++) {
-		    		
-		    		CheckBox courseCheckBox = new CheckBox();
-		    		if (courseIDs.get(i).length()>10) {
-		    			
-		    			courseCheckBox.setText(courseIDs.get(i).substring(0,10) + "...");
-		    			courseCheckBox.setId(courseIDs.get(i));
-					}
-		    		else {
-		    			courseCheckBox.setText(courseIDs.get(i));
-		    			courseCheckBox.setId(courseIDs.get(i));
-					}
-		    		checkboxes.add(courseCheckBox);
-		    		GridPane.setColumnIndex(courseCheckBox, i % 4);
-	                GridPane.setRowIndex(courseCheckBox, i / 4);
-				}
-		    	
-			}
-			coursesGrid.getChildren().addAll(checkboxes);
-			courseIDFilter.setContent(coursesGrid);
+			
+			
 	    	filterOverlay.setVisible(true);
 	    	filterOpen = true;
 		}
@@ -213,37 +242,34 @@ public class AttendanceAdminController {
     
     @FXML
     private void openImportCSVOverlay() {
-    	selectedFile = null;
+    	selectedFile.set(null);
 		fileUploadOverlay.setVisible(true);
     	
 	}
     @FXML
     private void cancelCSVImport() {
-    	selectedFile = null;
+    	selectedFile.set(null);
     	fileUploadOverlay.setVisible(false);
     	selectedFileBox.setVisible(false);
 	}
+   
     @FXML
     private void handleBrowseLink() {
-        // Open the file chooser here
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select File(s)");
 
-        // Optionally add extension filters (e.g., CSV, XLS)
         fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
-            new FileChooser.ExtensionFilter("Excel Files", "*.xls", "*.xlsx")
+            new FileChooser.ExtensionFilter("CSV Files", "*.csv")
         );
 
-        // Show the file chooser
-        // Use the hyperlink’s scene/window as the parent for the dialog
         Window window = browseLink.getScene().getWindow();
-        selectedFile = fileChooser.showOpenDialog(window);
+        File file = fileChooser.showOpenDialog(window);
 
-        if (selectedFile != null) {
-            handleFileSelected(selectedFile);
+        if (file != null) {
+            selectedFile.set(file);
         }
     }
+
     
     @FXML
     private void handleDragOver(DragEvent event) {
@@ -257,43 +283,63 @@ public class AttendanceAdminController {
     private void handleDragDrop(DragEvent event) {
         Dragboard db = event.getDragboard();
         if (db.hasFiles()) {
-        	if (db.getFiles().size()>1) {
-				System.out.println("TOO MUCH FILES AAAAAAAAA");
-			}
-        	else {
-        		// Retrieve the first file from the list (you can modify this to handle multiple files)
-            	selectedFile = db.getFiles().get(0);
-            	String fileName = selectedFile.getName().toLowerCase();
-                if (fileName.endsWith(".csv") || fileName.endsWith(".xls") || fileName.endsWith(".xlsx")) {
-                    handleFileSelected(selectedFile);
+            if (db.getFiles().size() > 1) {
+                UIServices.showAlert(AlertType.ERROR, "File Import Error", "Please select only one file");
+            } else {
+                File file = db.getFiles().get(0);
+                String fileName = file.getName().toLowerCase();
+                if (fileName.endsWith(".csv")) {
+                    selectedFile.set(file);
                 } else {
                     System.out.println("Unsupported file format: " + fileName);
                 }
-			}
-            
+            }
         }
-        
-        // Indicate whether the drop was successfully completed
+
         event.setDropCompleted(db.hasFiles());
         event.consume();
     }
-    
-    
-    @FXML
-    private void handleFileSelected(File selectedFile) {
-    	selectedFileBox.setVisible(true);
-		fileName.setText(selectedFile.getName());
-		fileSize.setText("File size: " + selectedFile.length()/1000 + "KB");
 
-	}
-    
+    @FXML
+    private void handleFileSelected(File file) {
+        selectedFileBox.setVisible(true);
+        fileName.setText(file.getName());
+        fileSize.setText("File size: " + file.length() / 1000 + "KB");
+    }
+
     @FXML
     private void handleSubmitFiles() {
-    	if (selectedFile != null) {
-    		System.out.println("hihihi");
-    		//System.out.println(dbHelper.addAttendanceRecord(selectedFile));
+        File file = selectedFile.get();
+        if (file == null) {
+            UIServices.showAlert(AlertType.ERROR, "File import error", "Please choose a file to upload");
+            return;
+        }
+        if (dbHelper.checkUploadedFile(selectedFile.get(), currentAdmin.getManagedCourses()) ==1) {
+			dbHelper.uploadCSVtoDB(selectedFile.get());
 		}
-		
+        System.out.println(dbHelper.checkUploadedFile(selectedFile.get(), currentAdmin.getManagedCourses()));
+        
 
-	}
+    }
+
+    
+    @FXML
+    private void onViewFileClicked() {
+    	if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().open(selectedFile.get());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Desktop not supported");
+        }
+    }
+    
+    @FXML
+    private void onDeleteFileClicked() {
+    	selectedFile.set(null);
+    	selectedFileBox.setVisible(false);
+    	
+    }
 }
