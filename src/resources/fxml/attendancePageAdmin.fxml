@@ -96,7 +96,7 @@
 						</ImageView>
 					</graphic>
 				</Button>
-				<ScrollPane fx:id="scrollablePane" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+				<ScrollPane fx:id="scrollablePane" fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
 					<content>
 						<VBox fx:id="coursesContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" />
 					</content>

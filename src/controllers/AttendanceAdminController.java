@@ -4,11 +4,14 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 //javaFX imports
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -17,7 +20,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -115,7 +122,7 @@ public class AttendanceAdminController {
         //FILE
         selectedFile.addListener((obs, oldFile, newFile) -> {
             if (newFile != null) {
-                handleFileSelected(newFile);
+                handleFileSelected();
                 submitFileButton.setDisable(false);
             } else {
                 selectedFileBox.setVisible(false);
@@ -178,49 +185,112 @@ public class AttendanceAdminController {
 		filterOpen = false;
     }
 	
-    private void loadCourses(List<String> coursesList, List<LocalDate> dateRange, String searchInput) { //Method that actually loads the attendance data, passes any filters/search to the dbHandler
+    
+    private void loadCourses(List<String> coursesList, List<LocalDate> dateRange, String searchInput) {
         coursesContainer.getChildren().clear();
-
-        List<String> courseIDs = (coursesList.isEmpty()) ? currentAdmin.getManagedCourses() : coursesList;
+        
+        List<String> courseIDs = (coursesList == null || coursesList.isEmpty()  ) ? currentAdmin.getManagedCourses() : coursesList;
 
         List<Student> students = dbHelper.getStudentsForCourse(courseIDs, dateRange, searchInput);
         Map<String, List<Student>> studentsByCourse = new HashMap<>();
-                
+
         for (Student student : students) {
-            studentsByCourse.computeIfAbsent(student.getCourseID(), k -> new ArrayList<>()).add(student);
+            studentsByCourse
+                .computeIfAbsent(student.getCourseID(), k -> new ArrayList<>())
+                .add(student);
         }
 
         for (String courseID : studentsByCourse.keySet()) {
-            TitledPane coursePane = new TitledPane();
-            GridPane studentsGrid = new GridPane();
-            List<Student> courseStudents = studentsByCourse.get(courseID);
-            
-            studentsGrid.setHgap(35);
-            studentsGrid.setVgap(40);
-            
-            coursePane.setText("Course ID: " + courseID);
-            coursePane.setPrefWidth(600);
-            coursePane.setExpanded(false);
-            
-            coursesContainer.getChildren().add(coursePane);
+            double courseAttendance = 0.0;
 
+            // Create and configure titled pane
+            TitledPane coursePane = new TitledPane();
+            coursePane.setExpanded(false);
+            //coursePane.setMaxWidth(Double.MAX_VALUE);
+            
+            // Create left side with course title
+            Label titleLabel = new Label();
+            HBox leftSide = new HBox(titleLabel);
+            leftSide.setAlignment(Pos.CENTER_LEFT);
+            
+            // Create right side with attendance info
+            Label overallAttText = new Label("Selected attendance:");
+            ProgressBar progressBar = new ProgressBar();
+            progressBar.setPrefWidth(100);
+            Label percentLabel = new Label();
+            HBox rightSide = new HBox(10, overallAttText, progressBar, percentLabel);
+            rightSide.setAlignment(Pos.CENTER_RIGHT);
+            
+            // Create main header container and add both sides
+            HBox header = new HBox();
+            header.setMaxWidth(Double.MAX_VALUE);
+            header.getChildren().addAll(leftSide, rightSide);
+            
+            // Make left side take all available space to push right side to the end
+            HBox.setHgrow(leftSide, Priority.ALWAYS);
+            
+            // Set the header as the graphic for the TitledPane
+            coursePane.setGraphic(header);
+
+            // Set title text
+            String truncatedCourse = courseID.length() > 8 ? courseID.substring(0, 8) + "..." : courseID;
+            titleLabel.setText("Course ID: " + truncatedCourse);
+
+            // Create content grid
+            
+            GridPane studentsGrid = new GridPane();
+            studentsGrid.setStyle("-fx-background-color: #D9D9D9;");
+            studentsGrid.setHgap(15);
+            studentsGrid.setVgap(15);
+            
+            studentsGrid.setMaxWidth(Double.MAX_VALUE);
+            HBox.setHgrow(studentsGrid, Priority.ALWAYS);
+            
+            List<Student> courseStudents = studentsByCourse.get(courseID);
             for (int j = 0; j < courseStudents.size(); j++) {
+                Student student = courseStudents.get(j);
+
                 VBox studentCard = new VBox();
-                Label studentName = new Label(courseStudents.get(j).getName());
-                Label studentID = new Label(courseStudents.get(j).getStudentID());
-                double attendancePercentage = (dateRange != null && dateRange.size() == 2) ?
-                        courseStudents.get(j).getAttendancePercentage(dateRange.get(0), dateRange.get(1)) :
-                        courseStudents.get(j).getAttendancePercentage(null, null);
-                Label attendance = new Label(Double.toString(attendancePercentage));
+                Label studentName = new Label(student.getName());
+                
+                studentCard.setStyle("-fx-background-radius: 20;"
+                		+ "-fx-background-color: #FFFFFF;"
+                		+ "-fx-padding: 20");
+                String studentIDString = student.getStudentID();
+                String truncatedID = studentIDString.length() > 12 ? studentIDString.substring(0, 12) + "..." : studentIDString;
+                Label studentID = new Label(truncatedID);
+                studentCard.setOnMouseClicked(event -> {
+                    handleStudentClick(studentIDString); // or pass in whatever you need
+                });
+                double attendancePercentage = (dateRange != null && dateRange.size() == 2)
+                        ? student.getAttendancePercentage(dateRange.get(0), dateRange.get(1))
+                        : student.getAttendancePercentage(null, null);
+
+                courseAttendance += attendancePercentage;
+
+                Label attendance = new Label(Math.round(attendancePercentage * 10.0) / 10.0 + "%");
                 studentCard.getChildren().addAll(studentName, studentID, attendance);
+
                 studentsGrid.add(studentCard, j % 4, j / 4);
             }
 
+            courseAttendance = courseStudents.isEmpty() ? 0 : courseAttendance / courseStudents.size();
+            progressBar.setProgress(courseAttendance / 100);
+            percentLabel.setText(Math.round(courseAttendance * 10.0) / 10.0 + "%");
+
             coursePane.setContent(studentsGrid);
+            coursesContainer.getChildren().add(coursePane);
+
+            // Scroll to bottom after each course is added
             scrollablePane.setVvalue(1.0);
         }
     }
-	
+	private void handleStudentClick(String studentIDString) {
+		// TODO Auto-generated method stub
+		//NavigationService.navigateTo("attendancePageStudent.fxml", studentIDString);
+		System.out.println(studentIDString);
+	}
+
 	@FXML	
 	private void filterClicked() {
 		if (filterOpen == false) {
@@ -301,8 +371,9 @@ public class AttendanceAdminController {
     }
 
     @FXML
-    private void handleFileSelected(File file) {
+    private void handleFileSelected() {
         selectedFileBox.setVisible(true);
+        File file = selectedFile.get();
         fileName.setText(file.getName());
         fileSize.setText("File size: " + file.length() / 1000 + "KB");
     }

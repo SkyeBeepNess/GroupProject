@@ -115,49 +115,7 @@ public class AttendanceStudentController {
 
 	
 
-/*	
-    private void loadCourses(List<String> coursesList, List<LocalDate> dateRange, String searchInput) { //Method that actually loads the attendance data, passes any filters/search to the dbHandler
-        coursesContainer.getChildren().clear();
-        List<String> courseIDs = (coursesList == null) ? DataBaseHelper.getAllCourseIDs() : coursesList;
-        List<Student> students = DataBaseHelper.getStudentsForCourse(courseIDs, dateRange, searchInput);
-        Map<String, List<Student>> studentsByCourse = new HashMap<>();
-                
-        for (Student student : students) {
-            studentsByCourse.computeIfAbsent(student.getCourseID(), k -> new ArrayList<>()).add(student);
-        }
 
-        for (String courseID : studentsByCourse.keySet()) {
-            TitledPane coursePane = new TitledPane();
-            GridPane studentsGrid = new GridPane();
-            List<Student> courseStudents = studentsByCourse.get(courseID);
-            
-            studentsGrid.setHgap(35);
-            studentsGrid.setVgap(40);
-            
-            coursePane.setText("Course ID: " + courseID);
-            coursePane.setPrefWidth(600);
-            coursePane.setExpanded(false);
-            
-            coursesContainer.getChildren().add(coursePane);
-
-            for (int j = 0; j < courseStudents.size(); j++) {
-                VBox studentCard = new VBox();
-                Label studentName = new Label(courseStudents.get(j).getName());
-                Label studentID = new Label(courseStudents.get(j).getStudentID());
-                double attendancePercentage = (dateRange != null && dateRange.size() == 2) ?
-                        courseStudents.get(j).getAttendancePercentage(dateRange.get(0), dateRange.get(1)) :
-                        courseStudents.get(j).getAttendancePercentage(null, null);
-                Label attendance = new Label(Double.toString(attendancePercentage));
-                studentCard.getChildren().addAll(studentName, studentID, attendance);
-                studentsGrid.add(studentCard, j % 4, j / 4);
-            }
-
-            coursePane.setContent(studentsGrid);
-            scrollablePane.setVvalue(1.0);
-        }
-    }
-*/
-	
 	@FXML
     private void onHomeClicked() {
     	NavigationService.navigateTo("HomePage.fxml", "Home");
