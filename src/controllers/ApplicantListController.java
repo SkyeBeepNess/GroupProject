@@ -25,6 +25,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -70,11 +71,15 @@ public class ApplicantListController {
 	@FXML private StackPane filterOverlay;
 	@FXML private DatePicker startDate;
 	@FXML private DatePicker endDate;
+	@FXML private TextField searchTextField;
+	String searchInput;
 	
 	private Admin admin;
 	private GridPane ukprnGrid = new GridPane();
 	private ArrayList<CheckBox> checkboxes = new ArrayList<>();
 	private List<String> ukprns;
+	private List<String> toFilterUKPRN;
+	String stDate, enDate;
 
     @FXML
     private void initialize() {
@@ -83,7 +88,7 @@ public class ApplicantListController {
     	admin = new Admin(UserSession.getInstance().getUserId(), ukprns);
     	filterOverlay.setVisible(false);
     	
-        loadApplicants(null, null, ukprns);
+        loadApplicants(null, null, ukprns, null);
         configureFilterGrid();
     	
     	viewDetailsButton.setDisable(true);
@@ -125,9 +130,9 @@ public class ApplicantListController {
     	ukprnFilter.setContent(ukprnGrid);
     }
 
-    private void loadApplicants(String stDate, String enDate, List<String> ukprnFiltered) {
+    private void loadApplicants(String stDate, String enDate, List<String> ukprnFiltered, String search) {
         applicants.clear();
-        applicants.addAll(applicantDAO.getApplicantsBy(stDate, enDate, ukprnFiltered));
+        applicants.addAll(applicantDAO.getApplicantsBy(stDate, enDate, ukprnFiltered, search));
 
         colApplicantName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("dateOfApplication"));
@@ -272,20 +277,22 @@ public class ApplicantListController {
     @FXML
     private void handleApplyFilters() {
     	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    	String stDate = startDate.getValue() != null ? startDate.getValue().format(formatter) : null;
-    	String enDate = endDate.getValue() != null ? endDate.getValue().format(formatter) : null;
+    	stDate = startDate.getValue() != null ? startDate.getValue().format(formatter) : null;
+    	enDate = endDate.getValue() != null ? endDate.getValue().format(formatter) : null;
     	System.out.println(stDate + " - " + enDate);
-    	List<String> toFilterUKPRN = getSelectedUkprns();
+    	toFilterUKPRN = getSelectedUkprns();
     	System.out.println(toFilterUKPRN);
+    	System.out.println(searchInput);
     	
-    	loadApplicants(stDate, enDate, toFilterUKPRN);
+    	loadApplicants(stDate, enDate, toFilterUKPRN, searchInput);
     	filterOverlay.setVisible(false);    	
     }
     
     @FXML
-    private void onSortClicked() {}
-    @FXML
     private void onSearchClicked() {
+    	searchInput = searchTextField.getText().trim();
+    	System.out.println(searchInput);
+        loadApplicants(stDate, enDate, toFilterUKPRN, searchInput);
     }
     
     @FXML
@@ -310,6 +317,7 @@ public class ApplicantListController {
     	ukprns.clear();
     	startDate = null;
     	endDate = null;
+    	toFilterUKPRN = null;
     	NavigationService.navigateTo("loginPage.fxml", "Login");
     }
     

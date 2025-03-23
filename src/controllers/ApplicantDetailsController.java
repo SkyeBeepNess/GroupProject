@@ -31,6 +31,7 @@ import java.util.Base64;
 import models.Applicant;
 import models.Admin;
 import session.UserSession;
+import utils.ProfilePictureManager;
 import services.NavigationService;
 import services.UIServices;
 
@@ -43,6 +44,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class ApplicantDetailsController {
+	
+	private ProfilePictureManager profileManager;
     
     private String passportPath, diplomaPath;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -97,42 +100,6 @@ public class ApplicantDetailsController {
     		Admin admin = (Admin) roleModel;
     	}
     	*/
-    	
-    	profileImageHBox.setVisible(false);
-    	profileImageHBox.setManaged(false);
-    	profileImageView.imageProperty().addListener((obs, oldImage, newImage) -> {
-    	    if (newImage != null) {
-    	        profileDropArea.setVisible(false);
-    	        profileDropArea.setManaged(false);
-    	        profileImageHBox.setVisible(true);
-    	        profileImageHBox.setManaged(true);
-
-    	        if (isAdminView) {
-    	            updateProfPicButton.setVisible(false);
-    	            updateProfPicButton.setManaged(false);
-
-    	            if (isDefault) {
-    	                deleteProfPicButton.setVisible(false);
-    	                deleteProfPicButton.setManaged(false);
-    	            } else {
-    	                deleteProfPicButton.setVisible(true);
-    	                deleteProfPicButton.setManaged(true);
-    	            }
-    	        }
-    	    } else {
-    	        if (!isAdminView) {
-    	            profileDropArea.setVisible(true);
-    	            profileDropArea.setManaged(true);
-    	            profileImageHBox.setVisible(false);
-    	            profileImageHBox.setManaged(false);
-    	        } else {
-    	            profileImageView.setImage(defaultProfile);
-    	            isDefault = true;
-    	            deleteProfPicButton.setVisible(false);
-	                deleteProfPicButton.setManaged(false);
-    	        }
-    	    }
-    	});
     	
     	selectedPassportFile.addListener((obs, oldFile, newFile) -> {
             if (newFile != null) {
@@ -201,6 +168,19 @@ public class ApplicantDetailsController {
         	System.out.println("No active application");
         }
         
+        profileManager = new ProfilePictureManager(
+    		    currentApplicant,
+    		    applicantDAO,
+    		    profileImageView,
+    		    profileDropArea,
+    		    profileImageHBox,
+    		    updateProfPicButton,
+    		    deleteProfPicButton,
+    		    isAdminView,
+    		    defaultProfile
+    		);
+  
+        
         if (currentApplicant != null) {
             fillFieldsWithApplicantData();
         }
@@ -244,15 +224,16 @@ public class ApplicantDetailsController {
         }
         
         if (currentApplicant.getProfilePicture() != null) {
-            byte[] imageBytes = Base64.getDecoder().decode(currentApplicant.getProfilePicture());
-            Image image = new Image(new ByteArrayInputStream(imageBytes));
-            profileImageView.setImage(image);
-        }
-        else if (isAdminView) {
-        	profileImageView.setImage(defaultProfile);
-            isDefault = true;
-            deleteProfPicButton.setVisible(false);
-            deleteProfPicButton.setManaged(false);
+        	System.out.println(currentApplicant.getProfilePicture());
+            profileManager.loadFromBase64(currentApplicant.getProfilePicture());
+        } else {
+        	if (isAdminView) {
+        		profileManager.updateUI(defaultProfile, true);
+        	}
+        	else {
+            	profileImageHBox.setVisible(false);
+            	profileImageHBox.setManaged(false);
+        	}
         }
     }
     
@@ -265,21 +246,13 @@ public class ApplicantDetailsController {
         );
         File file = chooser.showOpenDialog(null);
         if (file != null) {
-            setProfileImageFromFile(file);
+        	profileManager.setImageFromFile(file);
         }
     }
     
     @FXML
     private void onDeletePPClicked() {
-    	if (isAdminView) {
-    		setProfileImageFromFile(null);
-    		deleteProfPicButton.setVisible(false);
-            deleteProfPicButton.setManaged(false);
-    	}
-    	else {
-    		setProfileImageFromFile(null);
-    		
-    	}
+    	profileManager.clearImage();    		
     }
     
     @FXML
@@ -294,57 +267,11 @@ public class ApplicantDetailsController {
     private void handleDropPP(DragEvent event) {
         Dragboard db = event.getDragboard();
         if (db.hasFiles()) {
-            setProfileImageFromFile(db.getFiles().get(0));
+        	File file = db.getFiles().get(0);
+        	profileManager.setImageFromFile(file);
         }
         event.setDropCompleted(true);
         event.consume();
-    }
-
-    private void setProfileImageFromFile(File file) {
-    	try {
-            if (file == null) {
-                              
-                if (!isAdminView) {
-                	profileImageView.setImage(null);
-                    profileDropArea.setVisible(true);
-                    profileDropArea.setManaged(true);
-                    profileImageHBox.setVisible(false);
-                    profileImageHBox.setManaged(false);
-                }
-                
-                else {
-                	profileImageView.setImage(defaultProfile);
-    	            isDefault = true;
-    	            deleteProfPicButton.setVisible(false);
-	                deleteProfPicButton.setManaged(false);
-                }
-
-                if (currentApplicant != null) {
-                    currentApplicant.setProfilePicture(null);
-                    applicantDAO.updateProfilePicture(currentApplicant.getUserId(), null);
-                }
-
-                return;
-            }
-
-            byte[] bytes = Files.readAllBytes(file.toPath());
-            String base64 = Base64.getEncoder().encodeToString(bytes);
-            Image img = new Image(new ByteArrayInputStream(bytes));
-            profileImageView.setImage(img);
-
-            profileDropArea.setVisible(false);
-            profileDropArea.setManaged(false);
-            profileImageHBox.setVisible(true);
-            profileImageHBox.setManaged(true);
-
-            if (currentApplicant != null) {
-                currentApplicant.setProfilePicture(base64);
-                applicantDAO.updateProfilePicture(currentApplicant.getUserId(), base64);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     

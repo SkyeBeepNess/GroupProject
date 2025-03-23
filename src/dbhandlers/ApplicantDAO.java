@@ -140,7 +140,7 @@ public class ApplicantDAO {
         }
     }
     
-    public List<Applicant> getApplicantsBy(String stDate, String enDate, List<String> ukprns) {
+    public List<Applicant> getApplicantsBy(String stDate, String enDate, List<String> ukprns, String search) {
         List<Applicant> applicants = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder("""
@@ -170,6 +170,13 @@ public class ApplicantDAO {
             sql.append(String.join(",", Collections.nCopies(ukprns.size(), "?")));
             sql.append(")");
             parameters.addAll(ukprns);
+        }
+        
+        if (search != null && !search.isBlank()) {
+            sql.append(" AND (\"Applicant Name\" LIKE ? OR ApplicationID LIKE ?)");
+            String searchPattern = "%" + search + "%";
+            parameters.add(searchPattern);
+            parameters.add(searchPattern);
         }
 
         try (PreparedStatement stmt = connection.prepareStatement(sql.toString())) {

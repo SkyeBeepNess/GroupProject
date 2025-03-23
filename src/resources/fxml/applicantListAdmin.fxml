@@ -88,12 +88,14 @@
 					<font>
 						<Font name="Segoe UI Bold" size="12.0" />
 					</font>
+               <graphic>
+      				<ImageView fitHeight="14.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+      					<image>
+      						<Image url="@../img/search.png" />
+      					</image>
+      				</ImageView>
+               </graphic>
 				</Button>
-				<ImageView fitHeight="14.0" fitWidth="23.0" layoutX="563.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
-					<image>
-						<Image url="@../img/search.png" />
-					</image>
-				</ImageView>
 				<TableView fx:id="applicantTable" layoutX="14.0" layoutY="37.0" prefHeight="230.0" prefWidth="591.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="-1.0">
 					<columns>
 						<TableColumn fx:id="colApplicantName" prefWidth="99.20001065731049" text="Applicant Name" />
