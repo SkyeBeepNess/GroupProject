@@ -284,7 +284,7 @@ public class ApplicantListController {
     	toFilterUKPRN = getSelectedUkprns();
     	System.out.println(toFilterUKPRN);
     	System.out.println(searchInput);
-    	
+    	toFilterUKPRN = toFilterUKPRN == null || toFilterUKPRN.isEmpty() ? ukprns : toFilterUKPRN;
     	loadApplicants(stDate, enDate, toFilterUKPRN, searchInput);
     	filterOverlay.setVisible(false);    	
     }
