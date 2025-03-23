@@ -215,5 +215,17 @@ public class ApplicantDAO {
             return false;
         }
     }
+    
+    public boolean updateApplicantStatus(String userId, String status) {
+    	String sql = "UPDATE applicants SET Status = ? WHERE UserID = ?";
+    	try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setString(2, userId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+        	e.printStackTrace();
+            return false;
+        }
+    }
 
 }

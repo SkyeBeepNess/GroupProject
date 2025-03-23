@@ -230,6 +230,7 @@ public class ApplicantListController {
 
         DataBaseManager.loadApplicantsFromCSV(selectedFile.get().getAbsolutePath());
         cancelCSVImport();
+        loadApplicants(stDate, enDate, toFilterUKPRN, searchInput);
     }
 
     
@@ -296,7 +297,17 @@ public class ApplicantListController {
     }
     
     @FXML
-    private void onRejectClicked() {}
+    private void onRejectClicked() {
+    	Applicant selectedApplicant = applicantTable.getSelectionModel().getSelectedItem();
+    	if (selectedApplicant != null) {
+            boolean success = applicantDAO.updateApplicantStatus(selectedApplicant.getUserId(), "Rejected");
+            if (success) {
+                selectedApplicant.setStatus("Rejected");
+                applicantTable.refresh();
+            }
+        }
+            
+    }
     
     @FXML
     private void viewApplicantDetails() {
@@ -309,7 +320,14 @@ public class ApplicantListController {
     }
     
     @FXML
-    private void onAcceptClicked() {}
+    private void onAcceptClicked() {
+    	Applicant selectedApplicant = applicantTable.getSelectionModel().getSelectedItem();
+    	boolean success = applicantDAO.updateApplicantStatus(selectedApplicant.getUserId(), "Accepted");
+        if (success) {
+            selectedApplicant.setStatus("Accepted");
+            applicantTable.refresh();
+        }
+    }
     
     @FXML
     private void onLogOutClicked() {
