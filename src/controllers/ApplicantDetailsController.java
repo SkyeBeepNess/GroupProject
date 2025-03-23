@@ -285,7 +285,13 @@ public class ApplicantDetailsController {
         Dragboard db = event.getDragboard();
         if (db.hasFiles()) {
         	File file = db.getFiles().get(0);
-        	profileManager.setImageFromFile(file);
+        	String fileName = file.getName().toLowerCase();
+            if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png")) {
+            	profileManager.setImageFromFile(file);
+            } else {
+                UIServices.showAlert(AlertType.ERROR, "Unsupported File Type", "Only JPG and PNG files are allowed.");
+            }
+        	
         }
         event.setDropCompleted(true);
         event.consume();
@@ -500,10 +506,15 @@ public class ApplicantDetailsController {
                 UIServices.showAlert(AlertType.ERROR, "File Import Error", "Please select only one file");
             } else {
                 File file = db.getFiles().get(0);
-                if (isPassport) {
-                    selectedPassportFile.set(file);
+                String fileName = file.getName().toLowerCase();
+                if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png") || fileName.endsWith(".pdf")) {
+                    if (isPassport) {
+                        selectedPassportFile.set(file);
+                    } else {
+                        selectedDiplomaFile.set(file);
+                    }
                 } else {
-                    selectedDiplomaFile.set(file);
+                    UIServices.showAlert(AlertType.ERROR, "Unsupported File Type", "Only JPG, PNG, and PDF files are allowed.");
                 }
             }
         }
