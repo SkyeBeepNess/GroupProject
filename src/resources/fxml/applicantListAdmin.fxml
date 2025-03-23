@@ -79,19 +79,7 @@
 						</ImageView>
 					</graphic>
 				</Button>
-            <Button alignment="CENTER" contentDisplay="RIGHT" graphicTextGap="6.0" layoutX="95.0" layoutY="6.0" mnemonicParsing="false" onAction="#onFilterClicked" prefHeight="26.0" prefWidth="63.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Sort" textFill="#333333" AnchorPane.topAnchor="5.0">
-               <font>
-                  <Font name="Segoe UI Bold" size="12.0" />
-               </font>
-               <graphic>
-                  <ImageView fitHeight="14.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../img/filter.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-				<TextField fx:id="searchTextField" layoutX="97.0" layoutY="4.0" prefHeight="26.0" prefWidth="423.0" promptText="Search by name or ApplicationID" style="-fx-background-color: #FFFFFF; -fx-background-radius: 100;" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+				<TextField fx:id="searchTextField" layoutX="97.0" layoutY="4.0" prefHeight="26.0" prefWidth="493.0" promptText="Search by name or ApplicationID" style="-fx-background-color: #FFFFFF; -fx-background-radius: 100;" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
 					<padding>
 						<Insets left="6.0" right="25.0" />
 					</padding>
@@ -132,7 +120,7 @@
 						<Font name="Segoe UI Bold" size="12.0" />
 					</font>
 				</Button>
-            <StackPane fx:id="filterOverlay" alignment="TOP_LEFT" layoutX="10.0" layoutY="36.8" prefHeight="267.0" prefWidth="600.0" style="-fx-background-color: rgba(0, 0, 0, 0.3);" visible="false" AnchorPane.rightAnchor="-3.0" AnchorPane.topAnchor="37.0">
+            <StackPane fx:id="filterOverlay" alignment="TOP_LEFT" layoutX="10.0" layoutY="36.8" prefHeight="267.0" prefWidth="600.0" style="-fx-background-color: rgba(0, 0, 0, 0.3);" visible="false" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="37.0">
                <children>
                   <VBox prefHeight="253.0" prefWidth="572.0">
                      <children>

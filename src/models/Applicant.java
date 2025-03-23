@@ -16,11 +16,12 @@ public class Applicant {
     private String passportPath;
     private String diplomaPath;
     private String status;
+    private String profilePicture;
 
     public Applicant(String userId, String applicationId, String dateOfApplication, String name, String lastName,
                      String nationality, String dob, String ukprn, String certificate, String institution, String grade,
                      String docDate,
-                     String passportPath, String diplomaPath, String status) {
+                     String passportPath, String diplomaPath, String status, String profilePicture) {
         this.userId = userId;
         this.applicationId = applicationId;
         this.dateOfApplication = dateOfApplication;
@@ -36,6 +37,7 @@ public class Applicant {
         this.passportPath = passportPath;
         this.diplomaPath = diplomaPath;
         this.status = status;
+        this.profilePicture = profilePicture;
     }
     
     public Applicant(String userId, String name, String applicationId, String dateOfApplication, String certificate, String grade, String ukprn, String status) {
@@ -64,6 +66,7 @@ public class Applicant {
     public String getPassportPath() { return passportPath; }
     public String getDiplomaPath() { return diplomaPath; }
     public String getStatus() { return status; }
+    public String getProfilePicture() {return profilePicture; }
     
     public void setUserId(String userId) { this.userId = userId; }
     public void setApplicationId(String applicationId) { this.applicationId = applicationId; }
@@ -80,4 +83,5 @@ public class Applicant {
     public void setPassportPath(String passportPath) { this.passportPath = passportPath; }
     public void setDiplomaPath(String diplomaPath) { this.diplomaPath = diplomaPath; }
     public void setStatus(String status) { this.status = status; }
+	public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }
 }

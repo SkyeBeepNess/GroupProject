@@ -43,7 +43,8 @@ public class ApplicantDAO {
                     rs.getString("DateOfCompletion"),
                     rs.getString("PassportPath"),
                     rs.getString("DiplomaPath"),
-                    rs.getString("Status")
+                    rs.getString("Status"),
+                    rs.getString("ProfilePicture")
                 );
             }
         } catch (SQLException e) {
@@ -196,5 +197,16 @@ public class ApplicantDAO {
         return applicants;
     }
 
+    public boolean updateProfilePicture(String userId, String base64) {
+        String sql = "UPDATE applicants SET ProfilePicture = ? WHERE UserID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, base64);
+            stmt.setString(2, userId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

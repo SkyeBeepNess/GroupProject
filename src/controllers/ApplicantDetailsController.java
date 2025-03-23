@@ -13,11 +13,20 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
+
+import java.util.Base64;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.io.ByteArrayInputStream;
+import java.util.Base64;
 
 import models.Applicant;
 import models.Admin;
@@ -50,6 +59,10 @@ public class ApplicantDetailsController {
     
 
     @FXML private Text applicationIdField;
+    @FXML private ImageView profileImageView;
+    @FXML private VBox profileDropArea;
+    @FXML private HBox profileImageHBox;
+    @FXML private Button updateProfPicButton;
     @FXML private TextField firstNameField, lastNameField, nationalityField, certificateField, gradeField, institutionField;
     @FXML private Label passportDropArea, diplomaDropArea;
    // @FXML private TextField passportField, diplomaField;
@@ -59,6 +72,7 @@ public class ApplicantDetailsController {
     @FXML private ImageView pdStatusImg, aqStatusImg, aqArrowImg, pdArrowImg;;
     @FXML private VBox personalDetailsVbox, academicalQualificationVbox;
     @FXML private VBox selectedPassportBox;
+    @FXML private Hyperlink browseLinkPP;
     @FXML private Hyperlink browsePassportLink;
     @FXML private Hyperlink browseDiplomaLink;
     private ObjectProperty<File> selectedPassportFile = new SimpleObjectProperty<>(null);
@@ -73,15 +87,42 @@ public class ApplicantDetailsController {
     @FXML
     private void initialize() {
     	applicantDAO = new ApplicantDAO();
-    	Object roleModel = UserSession.getInstance().getRoleModel();
+    	//Object roleModel = UserSession.getInstance().getRoleModel();
         String role = session.getRole();
         String selectedApplicantId = session.getSelectedApplicantId();
-    	isAdminView = "admin".equals(role);
+    	isAdminView = "admin".equals(role) || "superadmin".equals(role);
     	/*
     	if (isAdminView) {
     		Admin admin = (Admin) roleModel;
     	}
     	*/
+    	if (isAdminView) {
+    		updateProfPicButton.setVisible(false);
+    		updateProfPicButton.setManaged(false);
+    	}
+    	profileImageHBox.setVisible(false);
+    	profileImageHBox.setManaged(false);
+    	profileImageView.imageProperty().addListener((obs, oldImage, newImage) -> {
+            if (newImage != null) {
+                profileDropArea.setVisible(false);
+                profileDropArea.setManaged(false);
+                profileImageHBox.setVisible(true);
+                profileImageHBox.setManaged(true);
+                if (isAdminView) {
+            		updateProfPicButton.setVisible(false);
+            		updateProfPicButton.setManaged(false);
+            	}
+            }
+            else {
+            	if (!isAdminView) {
+            		profileDropArea.setVisible(true);
+                    profileDropArea.setManaged(true);
+            	}
+            	profileImageHBox.setVisible(false);
+            	profileImageHBox.setManaged(false);
+            	
+            }
+        });
     	
     	selectedPassportFile.addListener((obs, oldFile, newFile) -> {
             if (newFile != null) {
@@ -129,6 +170,8 @@ public class ApplicantDetailsController {
     	});
 
         if (isAdminView) {
+        	profileDropArea.setVisible(false);
+        	profileDropArea.setManaged(false);
         	passportDropArea.setVisible(false);
             passportDropArea.setManaged(false);
             diplomaDropArea.setVisible(false);
@@ -185,7 +228,91 @@ public class ApplicantDetailsController {
                 System.out.println("Diploma file restored from path: " + file.getAbsolutePath());
             }
         }
+        
+        if (currentApplicant.getProfilePicture() != null) {
+            byte[] imageBytes = Base64.getDecoder().decode(currentApplicant.getProfilePicture());
+            Image image = new Image(new ByteArrayInputStream(imageBytes));
+            profileImageView.setImage(image);
+        }
     }
+    
+    @FXML
+    private void uploadPP() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select Profile Image");
+        chooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+        File file = chooser.showOpenDialog(null);
+        if (file != null) {
+            setProfileImageFromFile(file);
+        }
+    }
+    
+    @FXML
+    private void onDeletePPClicked() {
+    	setProfileImageFromFile(null);
+    }
+    
+    @FXML
+    private void handleDragOverPP(DragEvent event) {
+        if (event.getDragboard().hasFiles()) {
+            event.acceptTransferModes(TransferMode.COPY);
+        }
+        event.consume();
+    }
+    
+    @FXML
+    private void handleDropPP(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        if (db.hasFiles()) {
+            setProfileImageFromFile(db.getFiles().get(0));
+        }
+        event.setDropCompleted(true);
+        event.consume();
+    }
+
+    private void setProfileImageFromFile(File file) {
+    	try {
+            if (file == null) {
+                profileImageView.setImage(null);
+
+                profileImageHBox.setVisible(false);
+                profileImageHBox.setManaged(false);
+                
+                if (!isAdminView) {
+                    profileDropArea.setVisible(true);
+                    profileDropArea.setManaged(true);
+                }
+
+                if (currentApplicant != null) {
+                    currentApplicant.setProfilePicture(null);
+                    applicantDAO.updateProfilePicture(currentApplicant.getUserId(), null);
+                }
+
+                return;
+            }
+
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            String base64 = Base64.getEncoder().encodeToString(bytes);
+            Image img = new Image(new ByteArrayInputStream(bytes));
+            profileImageView.setImage(img);
+
+            profileDropArea.setVisible(false);
+            profileDropArea.setManaged(false);
+            profileImageHBox.setVisible(true);
+            profileImageHBox.setManaged(true);
+
+            if (currentApplicant != null) {
+                currentApplicant.setProfilePicture(base64);
+                applicantDAO.updateProfilePicture(currentApplicant.getUserId(), base64);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     
     private void configureDatePicker(DatePicker datePicker) {
         datePicker.setConverter(new StringConverter<>() {
@@ -464,6 +591,22 @@ public class ApplicantDetailsController {
         }
     }
 
+    public String encodeImageToBase64(File imageFile) {
+        try (FileInputStream fis = new FileInputStream(imageFile)) {
+            byte[] bytes = fis.readAllBytes();
+            return Base64.getEncoder().encodeToString(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+
+    public Image decodeBase64ToImage(String base64) {
+    	if (base64 == null || base64.isBlank()) return null;
+    	byte[] imageBytes = Base64.getDecoder().decode(base64);
+    	return new Image(new ByteArrayInputStream(imageBytes));
+    }
     
     @FXML
     private void onDeletePassportClicked() {

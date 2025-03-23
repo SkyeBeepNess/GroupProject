@@ -179,10 +179,7 @@ public class DataBaseManager {
 
             pstmtApplicant.executeBatch();
             connection.commit();
-            
-            
-            
-            //generateUniqueUsernamesAndInsertApplicantsIntoUsers();
+            generateUniqueUsernamesAndInsertApplicantsIntoUsers();
 
             System.out.println("Data base updated!");
 

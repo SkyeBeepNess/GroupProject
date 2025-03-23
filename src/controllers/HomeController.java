@@ -30,7 +30,8 @@ public class HomeController {
 		UserSession session = UserSession.getInstance();
 		
 		if ("applicant".equals(session.getRole())) {
-			Applicant applicantModel = ApplicantDAO.getApplicantByUserId(session.getUserId());
+			ApplicantDAO applicantDAO = new ApplicantDAO();
+			Applicant applicantModel = applicantDAO.getApplicantByUserId(session.getUserId());
 			UserSession.getInstance().setRoleModel(applicantModel);
 			NavigationService.navigateTo("ApplicantDetails.fxml", "ApplicantDetails");
 		}
