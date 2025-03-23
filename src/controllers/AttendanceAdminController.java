@@ -287,7 +287,8 @@ public class AttendanceAdminController {
     }
 	private void handleStudentClick(String studentIDString) {
 		// TODO Auto-generated method stub
-		//NavigationService.navigateTo("attendancePageStudent.fxml", studentIDString);
+		userSession.setSelectedStudentId(studentIDString);
+		NavigationService.navigateTo("attendancePageStudent.fxml", studentIDString);
 		System.out.println(studentIDString);
 	}
 

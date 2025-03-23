@@ -2,7 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
@@ -11,10 +13,13 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
 
 <AnchorPane maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #D9D9D9;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AttendanceStudentController">
 
@@ -22,12 +27,14 @@
 		<!-- Top Bar -->
 		<AnchorPane maxHeight="282.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #65558F;">
 			<children>
-				<Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" style="-fx-background-color: transparent;" />
-				<ImageView fitHeight="50.0" fitWidth="30.0" layoutX="16.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
-					<image>
-						<Image url="@../img/home.png" />
-					</image>
-				</ImageView>
+				<Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeClicked" prefHeight="50.0" prefWidth="52.0" style="-fx-background-color: transparent;">
+               <graphic>
+      				<ImageView fitHeight="50.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+      					<image>
+      						<Image url="@../img/home.png" />
+      					</image>
+      				</ImageView>
+               </graphic></Button>
 
 				<Text fill="WHITE" layoutX="279.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="UMS" textAlignment="CENTER" wrappingWidth="42.39453125">
 					<font>
@@ -40,7 +47,7 @@
 			<children>
 				<VBox>
 					<HBox.margin>
-						<Insets left="26.0" top="31.0" />
+						<Insets left="26.0" top="2.0" />
 					</HBox.margin>
 					<children>
 						<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Attendance Dashboard">
@@ -48,6 +55,65 @@
 								<Font name="Segoe UI Bold" size="22.0" />
 							</font>
 						</Text>
+                  <TextFlow>
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Student: ">
+                           <font>
+                              <Font name="Segoe UI" size="14.0" />
+                           </font>
+                        </Text>
+                        <Text fx:id="studentNameField" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
+                           <font>
+                              <Font name="Segoe UI Bold" size="14.0" />
+                           </font>
+                        </Text>
+                        <Text fx:id="studentIDField" strokeType="OUTSIDE" strokeWidth="0.0" text="StudentID">
+                           <font>
+                              <Font name="Segoe UI Bold" size="14.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </TextFlow>
+                  <TextFlow>
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Course: ">
+                           <font>
+                              <Font name="Segoe UI" size="14.0" />
+                           </font>
+                        </Text>
+                        <Text fx:id="courseIDField" strokeType="OUTSIDE" strokeWidth="0.0" text="CourseID">
+                           <font>
+                              <Font name="Segoe UI Bold" size="14.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </TextFlow>
+						<TableView fx:id="sessionsTable" prefHeight="187.0" prefWidth="334.0">
+							<columns>
+								<TableColumn fx:id="sessionDateColumn" editable="false" prefWidth="129.0" text="Date" />
+								<TableColumn fx:id="attendanceColumn" editable="false" prefWidth="85.0" text="Attendance" />
+							</columns>
+							<columnResizePolicy>
+								<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+							</columnResizePolicy>
+						</TableView>
+                  <Button fx:id="editAttendanceButton" mnemonicParsing="false" onAction="#openEditOverlay" prefHeight="23.0" prefWidth="120.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Edit attendance" textFill="#333333">
+                     <font>
+                        <Font name="Segoe UI Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="200.0" top="12.0" />
+                     </VBox.margin>
+                  </Button>
+					</children>
+				</VBox>
+            <VBox nodeOrientation="LEFT_TO_RIGHT" prefHeight="200.0" HBox.hgrow="ALWAYS">
+               <children>
+      				<ProgressIndicator fx:id="studentAttendancePercentageIndicator" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="181.0" prefWidth="234.0" progress="0.73">
+                     <VBox.margin>
+                        <Insets top="30.0" />
+                     </VBox.margin>
+      				</ProgressIndicator>
 						<GridPane>
 							<columnConstraints>
 								<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -59,7 +125,7 @@
 								<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 							</rowConstraints>
 							<children>
-								<Text fill="#9b9b9b" strokeType="OUTSIDE" strokeWidth="0.0" text="Late" GridPane.rowIndex="1">
+								<Text fill="#9b9b9b" strokeType="OUTSIDE" strokeWidth="0.0" text="Late..............." GridPane.rowIndex="1">
 									<font>
 										<Font name="Segoe UI" size="22.0" />
 									</font>
@@ -69,7 +135,7 @@
 										<Font name="Segoe UI" size="22.0" />
 									</font>
 								</Text>
-								<Text fill="#9b9b9b" strokeType="OUTSIDE" strokeWidth="0.0" text="Absent">
+								<Text fill="#9b9b9b" strokeType="OUTSIDE" strokeWidth="0.0" text="Absent.........">
 									<font>
 										<Font name="Segoe UI" size="22.0" />
 									</font>
@@ -79,7 +145,7 @@
 										<Font name="Segoe UI" size="22.0" />
 									</font>
 								</Text>
-								<Text fill="#9b9b9b" strokeType="OUTSIDE" strokeWidth="0.0" text="Present" GridPane.rowIndex="2">
+								<Text fill="#9b9b9b" strokeType="OUTSIDE" strokeWidth="0.0" text="Present........." GridPane.rowIndex="2">
 									<font>
 										<Font name="Segoe UI" size="22.0" />
 									</font>
@@ -90,27 +156,224 @@
 									</font>
 								</Text>
 							</children>
+                     <VBox.margin>
+                        <Insets left="18.0" />
+                     </VBox.margin>
 						</GridPane>
-						<TableView fx:id="sessionsTable" prefHeight="187.0" prefWidth="334.0">
-							<columns>
-								<TableColumn fx:id="sessionDateColumn" editable="false" prefWidth="129.0" text="Date" />
-								<TableColumn fx:id="attendanceColumn" editable="false" prefWidth="85.0" text="Attendance" />
-							</columns>
-							<columnResizePolicy>
-								<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-							</columnResizePolicy>
-						</TableView>
-					</children>
-				</VBox>
-				<ProgressIndicator fx:id="studentAttendancePercentageIndicator" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="214.0" prefWidth="236.0" progress="0.73">
-					<HBox.margin>
-						<Insets top="64.0" />
-					</HBox.margin>
-				</ProgressIndicator>
+                  <Button fx:id="backToOverviewButton" disable="true" mnemonicParsing="false" onAction="#navigateBackToOverview" prefHeight="23.0" prefWidth="120.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Back to overview" textFill="#333333" visible="false">
+                     <font>
+                        <Font name="Segoe UI Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="105.0" top="17.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+            </VBox>
 			</children>
 		</HBox>
 
 		<!-- Login Form Card -->
 
 	</VBox>
+   <StackPane fx:id="attendanceEditOverlay" layoutX="227.0" layoutY="-82.0" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: rgba(0, 0, 0, 0.5);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+         <VBox style="-fx-background-color: #FFFFFF;">
+            <children>
+               <TableView fx:id="editableSessionsTable" editable="true" prefHeight="380.0" prefWidth="540.0">
+                  <columns>
+                     <TableColumn fx:id="sessionDateColumnEditable" prefWidth="129.0" text="Date" />
+                     <TableColumn fx:id="attendanceColumnEditable" prefWidth="85.0" text="Attendance" />
+                  </columns>
+                  <columnResizePolicy>
+                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                  </columnResizePolicy>
+                  <VBox.margin>
+                     <Insets />
+                  </VBox.margin>
+               </TableView>
+               <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                  <children>
+                     <Button fx:id="editSelectionButton" disable="true" mnemonicParsing="false" onAction="#handleEditSelectedAttendance" prefHeight="23.0" prefWidth="107.0" style="-fx-background-color: #9747FF; -fx-background-radius: 100;" text="Edit selection" textFill="WHITE">
+                        <font>
+                           <Font name="Segoe UI" size="12.0" />
+                        </font>
+                        <HBox.margin>
+                           <Insets left="7.0" />
+                        </HBox.margin>
+                     </Button>
+                     <Button mnemonicParsing="false" onAction="#handleAddRecord" prefHeight="23.0" prefWidth="107.0" style="-fx-background-color: #9747FF; -fx-background-radius: 100;" text="Add record" textFill="WHITE">
+                        <font>
+                           <Font name="Segoe UI" size="12.0" />
+                        </font>
+                        <HBox.margin>
+                           <Insets left="10.0" />
+                        </HBox.margin>
+                     </Button>
+                     <Region prefHeight="38.0" prefWidth="149.0" />
+                     <Button mnemonicParsing="false" onAction="#closeEditOverlay" prefHeight="23.0" prefWidth="66.0" style="-fx-background-color: #9747FF; -fx-background-radius: 100;" text="Cancel" textFill="WHITE">
+                        <font>
+                           <Font name="Segoe UI" size="12.0" />
+                        </font>
+                        <HBox.margin>
+                           <Insets right="13.0" />
+                        </HBox.margin>
+                     </Button>
+                     <Button mnemonicParsing="false" onAction="#saveChanges" prefHeight="23.0" prefWidth="120.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Save changes" textFill="#333333">
+                        <font>
+                           <Font name="Segoe UI Bold" size="12.0" />
+                        </font>
+                        <HBox.margin>
+                           <Insets right="12.0" />
+                        </HBox.margin>
+                     </Button>
+                  </children>
+               </HBox>
+            </children>
+            <StackPane.margin>
+               <Insets bottom="15.0" left="30.0" right="30.0" top="30.0" />
+            </StackPane.margin>
+         </VBox>
+      </children>
+   </StackPane>
+   <StackPane fx:id="editRowOverlay" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: rgba(0, 0, 0, 0.5);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+         <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20;">
+            <StackPane.margin>
+               <Insets bottom="115.0" left="200.0" right="200.0" top="133.0" />
+            </StackPane.margin>
+            <children>
+               <TextFlow>
+                  <children>
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Session date: ">
+                        <font>
+                           <Font name="Segoe UI" size="12.0" />
+                        </font>
+                     </Text>
+                     <Text fx:id="sessionDateText" strokeType="OUTSIDE" strokeWidth="0.0" text="01/01/2000">
+                        <font>
+                           <Font name="Segoe UI" size="12.0" />
+                        </font>
+                     </Text>
+                  </children>
+                  <VBox.margin>
+                     <Insets left="20.0" top="20.0" />
+                  </VBox.margin>
+               </TextFlow>
+               <RadioButton fx:id="rbPresent" mnemonicParsing="false" text="Present">
+                  <font>
+                     <Font name="Segoe UI" size="12.0" />
+                  </font>
+                  <VBox.margin>
+                     <Insets left="20.0" top="8.0" />
+                  </VBox.margin>
+               </RadioButton>
+               <RadioButton fx:id="rbAbsent" mnemonicParsing="false" text="Absent">
+                  <font>
+                     <Font name="Segoe UI" size="12.0" />
+                  </font>
+                  <VBox.margin>
+                     <Insets left="20.0" top="8.0" />
+                  </VBox.margin>
+               </RadioButton>
+               <RadioButton fx:id="rbLate" mnemonicParsing="false" text="Late">
+                  <font>
+                     <Font name="Segoe UI" size="12.0" />
+                  </font>
+                  <VBox.margin>
+                     <Insets left="20.0" top="8.0" />
+                  </VBox.margin>
+               </RadioButton>
+               <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                  <children>
+                     <Button fx:id="cancelButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="66.0" style="-fx-background-color: #9747FF; -fx-background-radius: 100;" text="Cancel" textFill="WHITE">
+                        <font>
+                           <Font name="Segoe UI" size="12.0" />
+                        </font>
+                        <HBox.margin>
+                           <Insets right="8.0" />
+                        </HBox.margin>
+                     </Button>
+                     <Button fx:id="applyButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="56.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Apply" textFill="#333333">
+                        <font>
+                           <Font name="Segoe UI Bold" size="12.0" />
+                        </font>
+                        <HBox.margin>
+                           <Insets right="13.0" />
+                        </HBox.margin>
+                     </Button>
+                  </children>
+               </HBox>
+            </children>
+         </VBox>
+      </children>
+   </StackPane>
+   <StackPane fx:id="addNewRecordOverlay" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: rgba(0, 0, 0, 0.5);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+         <VBox prefHeight="152.0" prefWidth="209.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20;">
+            <StackPane.margin>
+               <Insets bottom="115.0" left="170.0" right="170.0" top="133.0" />
+            </StackPane.margin>
+            <children>
+               <TextFlow>
+                  <children>
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Session date: ">
+                        <font>
+                           <Font name="Segoe UI" size="12.0" />
+                        </font>
+                     </Text>
+                     <DatePicker fx:id="newSessionDate" prefHeight="25.0" prefWidth="149.0" />
+                  </children>
+                  <VBox.margin>
+                     <Insets left="20.0" top="20.0" />
+                  </VBox.margin>
+               </TextFlow>
+               <RadioButton fx:id="rbPresentNew" mnemonicParsing="false" text="Present">
+                  <font>
+                     <Font name="Segoe UI" size="12.0" />
+                  </font>
+                  <VBox.margin>
+                     <Insets left="20.0" top="8.0" />
+                  </VBox.margin>
+               </RadioButton>
+               <RadioButton fx:id="rbLateNew" mnemonicParsing="false" text="Absent">
+                  <font>
+                     <Font name="Segoe UI" size="12.0" />
+                  </font>
+                  <VBox.margin>
+                     <Insets left="20.0" top="8.0" />
+                  </VBox.margin>
+               </RadioButton>
+               <RadioButton fx:id="rbAbsentNew" mnemonicParsing="false" text="Late">
+                  <font>
+                     <Font name="Segoe UI" size="12.0" />
+                  </font>
+                  <VBox.margin>
+                     <Insets left="20.0" top="8.0" />
+                  </VBox.margin>
+               </RadioButton>
+               <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                  <children>
+                     <Button fx:id="cancelButtonNewRecord" mnemonicParsing="false" prefHeight="23.0" prefWidth="66.0" style="-fx-background-color: #9747FF; -fx-background-radius: 100;" text="Cancel" textFill="WHITE">
+                        <font>
+                           <Font name="Segoe UI" size="12.0" />
+                        </font>
+                        <HBox.margin>
+                           <Insets right="8.0" />
+                        </HBox.margin>
+                     </Button>
+                     <Button fx:id="applyButtonNewRecord" mnemonicParsing="false" prefHeight="23.0" prefWidth="56.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Apply" textFill="#333333">
+                        <font>
+                           <Font name="Segoe UI Bold" size="12.0" />
+                        </font>
+                        <HBox.margin>
+                           <Insets right="13.0" />
+                        </HBox.margin>
+                     </Button>
+                  </children>
+               </HBox>
+            </children>
+         </VBox>
+      </children>
+   </StackPane>
 </AnchorPane>

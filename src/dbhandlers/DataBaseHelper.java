@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import controllers.AttendanceStudentController;
+import controllers.AttendanceStudentController.StudentAttendance;
+import javafx.collections.ObservableList;
 import models.Admin;
 import models.Student;
 
@@ -296,10 +299,7 @@ public class DataBaseHelper {
     }    
     
     public static boolean uploadCSVtoDB(File importedFile) {
-    	
-    	
-    	
-    	
+
     	String sql = "INSERT INTO attendance (StudentID, CourseID, SessionDate, Attendance, UserID) VALUES (?, ?, ?, ?, ?)";
     	try (PreparedStatement stmt = connection.prepareStatement(sql.toString())) {
     		connection.setAutoCommit(false);
@@ -337,4 +337,52 @@ public class DataBaseHelper {
 		return true;
 
 	}
+    
+    public static void updateAttendanceForStudent(Student student, ObservableList newAttendance) {
+    	String deleteSQL = "DELETE FROM attendance WHERE StudentID = ?";
+    	String insertSQL = "INSERT INTO attendance (StudentID, CourseID, SessionDate, Attendance, UserID) VALUES (?, ?, ?, ?, ?)";
+    	DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    	DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    	String studentsUserID = DataBaseHelper.getUserIDByStudentID(student.getStudentID());
+    	try (PreparedStatement deleteStmt = connection.prepareStatement(deleteSQL)) {
+            deleteStmt.setString(1, student.getStudentID());
+            deleteStmt.executeUpdate();
+        } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        try (PreparedStatement insertStmt = connection.prepareStatement(insertSQL)) {
+        	for (Object object : newAttendance) {
+        		
+                
+                
+                // Formatter for the input string
+                
+                // Parse the string into a LocalDate
+                LocalDate date = LocalDate.parse(((StudentAttendance) object).getSessionDate(), inputFormatter);
+                
+                // Formatter for the desired output format
+                
+                // Format the LocalDate to the desired string format
+                String output = date.format(outputFormatter);
+        		insertStmt.setString(1, student.getStudentID());
+        		insertStmt.setString(2, student.getCourseID());
+        		insertStmt.setString(3, output);
+        		if (((StudentAttendance) object).getAttendance().contentEquals("Present")) {
+        			insertStmt.setString(4, "Yes");
+				}
+        		else {
+            		insertStmt.setString(4, ((StudentAttendance) object).getAttendance());
+				}
+        		insertStmt.setString(5, studentsUserID);
+                insertStmt.addBatch();
+			}
+        	
+            
+            insertStmt.executeBatch();
+        } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 }
