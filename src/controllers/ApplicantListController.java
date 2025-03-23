@@ -228,9 +228,12 @@ public class ApplicantListController {
             return;
         }
 
-        DataBaseManager.loadApplicantsFromCSV(selectedFile.get().getAbsolutePath());
-        cancelCSVImport();
-        loadApplicants(stDate, enDate, toFilterUKPRN, searchInput);
+        boolean success = DataBaseManager.loadApplicantsFromCSV(selectedFile.get().getAbsolutePath());
+        if (success) {
+        	cancelCSVImport();
+        	toFilterUKPRN = toFilterUKPRN == null || toFilterUKPRN.isEmpty() ? ukprns : toFilterUKPRN;
+            loadApplicants(stDate, enDate, toFilterUKPRN, searchInput);
+        }
     }
 
     

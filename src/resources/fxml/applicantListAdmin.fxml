@@ -237,7 +237,7 @@
                            </Hyperlink>
                         </children>
                      </TextFlow>
-                     <Text fill="#00000052" strokeType="OUTSIDE" strokeWidth="0.0" text="Supported file format: CSV, XLS, XLSX" />
+                     <Text fill="#00000052" strokeType="OUTSIDE" strokeWidth="0.0" text="Supported file format: CSV" />
                   </children>
                </VBox>
                <AnchorPane prefHeight="76.0" prefWidth="500.0">
