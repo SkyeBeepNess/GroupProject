@@ -26,6 +26,7 @@ import java.util.Map;
 import dbhandlers.DataBaseHelper;
 import models.Student;
 import services.NavigationService;
+import services.UIServices;
 import session.UserSession;
 
 public class AttendanceStudentController {
@@ -102,6 +103,7 @@ public class AttendanceStudentController {
 		if (userSession.getRole().contentEquals("admin")||userSession.getRole().contentEquals("superadmin")) {
 			backToOverviewButton.setVisible(true);
 			backToOverviewButton.setDisable(false);
+			editAttendanceButton.setVisible(true);
 			this.student = dbHelper.getStudentByUserID(dbHelper.getUserIDByStudentID(userSession.getSelectedStudentId()));
 			
 		}
@@ -179,6 +181,11 @@ public class AttendanceStudentController {
         editableData.set(key, attendance);
         
     }
+	public void deleteRow(StudentAttendance selectedSession) {
+        
+        editableData.remove(selectedSession);
+        
+    }
 
     public static Map<String, Integer> countFrequencies(Map<?, String> map) {
         Map<String, Integer> frequencyMap = new HashMap<>();
@@ -213,6 +220,7 @@ public class AttendanceStudentController {
 	
 	@FXML
 	private void openEditOverlay() {
+		initialize();
 		attendanceEditOverlay.setVisible(true);
 	}
 	@FXML
@@ -321,5 +329,15 @@ public class AttendanceStudentController {
         });
 
     }
+	
+	@FXML
+	private void handleDeleteRecord() {
+		if (UIServices.showConfirmation("Are you sure?", "Are you sure you want to delete this record?", "Yes", "No").getText().contentEquals("Yes")) {
+			StudentAttendance selectedSession = editableSessionsTable.getSelectionModel().getSelectedItem();
+			deleteRow(selectedSession);
+		}
+
+		
+	}
 	
 }
