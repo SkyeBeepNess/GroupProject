@@ -580,5 +580,27 @@ public class ApplicantDetailsController {
     	selectedDiplomaFile.set(null);
     	NavigationService.navigateTo("loginPage.fxml", "Login");
     }
+    
+    @FXML
+    private void onSubmitClicked() {
+    	boolean profilePictureSet = currentApplicant.getProfilePicture() != null;
+    	
+    	boolean personalComplete = !firstNameField.getText().trim().isEmpty() &&
+                !nationalityField.getText().trim().isEmpty() &&
+                dobPicker.getValue() != null && selectedPassportFile.get() != null;
+
+    	boolean academicComplete = !certificateField.getText().trim().isEmpty() &&
+                !institutionField.getText().trim().isEmpty() &&
+                docPicker.getValue() != null && selectedDiplomaFile.get() != null;
+    	
+    	if (profilePictureSet && personalComplete && academicComplete) {
+    		saveAcademicQualification();
+    		savePersonalDetails();
+    		currentApplicant.setStatus("Submitted");
+    		UIServices.showAlert(AlertType.INFORMATION, "Success", "Application submitted successfully!");
+    		
+    	}
+    	
+    }
 
 }
