@@ -51,18 +51,19 @@ public class ApplicantDetailsController {
     private final Image checkImage = new Image(getClass().getResourceAsStream("/resources/img/check.png"));
     private final Image arrowDownImage = new Image(getClass().getResourceAsStream("/resources/img/arrow-down.png"));
     private final Image arrowRightImage = new Image(getClass().getResourceAsStream("/resources/img/arrow-right.png"));
-
+    private final Image defaultProfile = new Image(getClass().getResourceAsStream("/resources/img/profpic.png"));
     private UserSession session = UserSession.getInstance();
     private ApplicantDAO applicantDAO;
     private Applicant currentApplicant;
     private boolean isAdminView;
+    private boolean isDefault = false;
     
 
     @FXML private Text applicationIdField;
     @FXML private ImageView profileImageView;
     @FXML private VBox profileDropArea;
     @FXML private HBox profileImageHBox;
-    @FXML private Button updateProfPicButton;
+    @FXML private Button updateProfPicButton, deleteProfPicButton;
     @FXML private TextField firstNameField, lastNameField, nationalityField, certificateField, gradeField, institutionField;
     @FXML private Label passportDropArea, diplomaDropArea;
    // @FXML private TextField passportField, diplomaField;
@@ -96,33 +97,42 @@ public class ApplicantDetailsController {
     		Admin admin = (Admin) roleModel;
     	}
     	*/
-    	if (isAdminView) {
-    		updateProfPicButton.setVisible(false);
-    		updateProfPicButton.setManaged(false);
-    	}
+    	
     	profileImageHBox.setVisible(false);
     	profileImageHBox.setManaged(false);
     	profileImageView.imageProperty().addListener((obs, oldImage, newImage) -> {
-            if (newImage != null) {
-                profileDropArea.setVisible(false);
-                profileDropArea.setManaged(false);
-                profileImageHBox.setVisible(true);
-                profileImageHBox.setManaged(true);
-                if (isAdminView) {
-            		updateProfPicButton.setVisible(false);
-            		updateProfPicButton.setManaged(false);
-            	}
-            }
-            else {
-            	if (!isAdminView) {
-            		profileDropArea.setVisible(true);
-                    profileDropArea.setManaged(true);
-            	}
-            	profileImageHBox.setVisible(false);
-            	profileImageHBox.setManaged(false);
-            	
-            }
-        });
+    	    if (newImage != null) {
+    	        profileDropArea.setVisible(false);
+    	        profileDropArea.setManaged(false);
+    	        profileImageHBox.setVisible(true);
+    	        profileImageHBox.setManaged(true);
+
+    	        if (isAdminView) {
+    	            updateProfPicButton.setVisible(false);
+    	            updateProfPicButton.setManaged(false);
+
+    	            if (isDefault) {
+    	                deleteProfPicButton.setVisible(false);
+    	                deleteProfPicButton.setManaged(false);
+    	            } else {
+    	                deleteProfPicButton.setVisible(true);
+    	                deleteProfPicButton.setManaged(true);
+    	            }
+    	        }
+    	    } else {
+    	        if (!isAdminView) {
+    	            profileDropArea.setVisible(true);
+    	            profileDropArea.setManaged(true);
+    	            profileImageHBox.setVisible(false);
+    	            profileImageHBox.setManaged(false);
+    	        } else {
+    	            profileImageView.setImage(defaultProfile);
+    	            isDefault = true;
+    	            deleteProfPicButton.setVisible(false);
+	                deleteProfPicButton.setManaged(false);
+    	        }
+    	    }
+    	});
     	
     	selectedPassportFile.addListener((obs, oldFile, newFile) -> {
             if (newFile != null) {
@@ -172,6 +182,8 @@ public class ApplicantDetailsController {
         if (isAdminView) {
         	profileDropArea.setVisible(false);
         	profileDropArea.setManaged(false);
+        	updateProfPicButton.setVisible(false);
+    		updateProfPicButton.setManaged(false);
         	passportDropArea.setVisible(false);
             passportDropArea.setManaged(false);
             diplomaDropArea.setVisible(false);
@@ -182,12 +194,14 @@ public class ApplicantDetailsController {
                 //disableEditing();
                 
             }
-        } else {
+            
+        } else if ("applicant".equals(role)) {
             currentApplicant = applicantDAO.getApplicantByUserId(session.getUserId());
+        } else {
+        	System.out.println("No active application");
         }
-
+        
         if (currentApplicant != null) {
-        	
             fillFieldsWithApplicantData();
         }
         
@@ -234,6 +248,12 @@ public class ApplicantDetailsController {
             Image image = new Image(new ByteArrayInputStream(imageBytes));
             profileImageView.setImage(image);
         }
+        else if (isAdminView) {
+        	profileImageView.setImage(defaultProfile);
+            isDefault = true;
+            deleteProfPicButton.setVisible(false);
+            deleteProfPicButton.setManaged(false);
+        }
     }
     
     @FXML
@@ -251,7 +271,15 @@ public class ApplicantDetailsController {
     
     @FXML
     private void onDeletePPClicked() {
-    	setProfileImageFromFile(null);
+    	if (isAdminView) {
+    		setProfileImageFromFile(null);
+    		deleteProfPicButton.setVisible(false);
+            deleteProfPicButton.setManaged(false);
+    	}
+    	else {
+    		setProfileImageFromFile(null);
+    		
+    	}
     }
     
     @FXML
@@ -275,14 +303,20 @@ public class ApplicantDetailsController {
     private void setProfileImageFromFile(File file) {
     	try {
             if (file == null) {
-                profileImageView.setImage(null);
-
-                profileImageHBox.setVisible(false);
-                profileImageHBox.setManaged(false);
-                
+                              
                 if (!isAdminView) {
+                	profileImageView.setImage(null);
                     profileDropArea.setVisible(true);
                     profileDropArea.setManaged(true);
+                    profileImageHBox.setVisible(false);
+                    profileImageHBox.setManaged(false);
+                }
+                
+                else {
+                	profileImageView.setImage(defaultProfile);
+    	            isDefault = true;
+    	            deleteProfPicButton.setVisible(false);
+	                deleteProfPicButton.setManaged(false);
                 }
 
                 if (currentApplicant != null) {

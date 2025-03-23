@@ -57,14 +57,14 @@
 						</Text>
 					</children>
 				</HBox>
-            <VBox prefHeight="282.0" prefWidth="358.0" spacing="5.0">
+            <VBox prefWidth="358.0" spacing="5.0">
                <children>
                   <Label text="Profile Picture:" />
                   <VBox fx:id="profileDropArea" alignment="CENTER" onDragDropped="#handleDropPP" onDragOver="#handleDragOverPP" onMouseClicked="#uploadPP" prefHeight="105.0" prefWidth="340.0" style="-fx-background-color: #ECECEC; -fx-padding: 10; -fx-alignment: center; -fx-background-radius: 25;" VBox.vgrow="SOMETIMES">
 <children>
   <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
       <image>
-          <Image url="@../img/cloud.png" />
+          <Image url="@../img/profpic.png" />
       </image>
   </ImageView>
   <TextFlow textAlignment="CENTER">
@@ -77,27 +77,26 @@
 </VBox>
                   <HBox fx:id="profileImageHBox">
                      <children>
-
-      <ImageView fx:id="profileImageView" fitHeight="150.0" fitWidth="143.0" style="-fx-border-radius: 50%;" />
+      					<ImageView fx:id="profileImageView" fitHeight="150.0" fitWidth="143.0" style="-fx-border-radius: 50%;" />
                         <VBox spacing="15.0">
-                           <children>
-                              <Button fx:id="updateProfPicButton" mnemonicParsing="false" onAction="#uploadPP" prefHeight="26.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Update" textFill="#333333">
-                                 <font>
-                                    <Font name="Segoe UI Bold" size="12.0" />
-                                 </font>
-                              </Button>
-                              <Button fx:id="deleteProfPicButton" mnemonicParsing="false" onAction="#onDeletePPClicked" prefHeight="26.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Delete" textFill="#333333">
-                                 <font>
-                                    <Font name="Segoe UI Bold" size="12.0" />
-                                 </font>
-                              </Button>
-                           </children>
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                           <padding>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </padding>
+                          	<children>
+                          		<Button fx:id="updateProfPicButton" mnemonicParsing="false" onAction="#uploadPP" prefHeight="26.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Update" textFill="#333333">
+                              		<font>
+                                  		<Font name="Segoe UI Bold" size="12.0" />
+                               		</font>
+	                            </Button>
+    	                        <Button fx:id="deleteProfPicButton" mnemonicParsing="false" onAction="#onDeletePPClicked" prefHeight="26.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Delete" textFill="#333333">
+         	                       <font>
+            	                        <Font name="Segoe UI Bold" size="12.0" />
+           	    	               </font>
+                   	            </Button>
+              		        </children>
+                        	<HBox.margin>
+                            	<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                            </HBox.margin>
+                           		<padding>
+                              		<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           		</padding>
                         </VBox>
                      </children>
                   </HBox>
@@ -229,11 +228,6 @@
                            </VBox>
                         </graphic>
 							</Label>
-							<TextField fx:id="passportField" editable="false" visible="false">
-								<font>
-									<Font name="Segoe UI" size="14.0" />
-								</font>
-							</TextField>
 							<Button fx:id="savePDButton" alignment="CENTER_RIGHT" onAction="#savePersonalDetails" style="-fx-background-color: #65558F; -fx-text-fill: white; -fx-background-radius: 25;" text="Save" />
 						</VBox>
 						<Button fx:id="toggleButton2" contentDisplay="LEFT" onAction="#academicQualificationPopup" prefWidth="600.0" style="-fx-background-color: white; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: black; -fx-alignment: CENTER_LEFT;" text="Academic Qualification">
