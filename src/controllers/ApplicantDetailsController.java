@@ -246,7 +246,18 @@ public class ApplicantDetailsController {
         );
         File file = chooser.showOpenDialog(null);
         if (file != null) {
-        	profileManager.setImageFromFile(file);
+        	Image image = new Image(file.toURI().toString());
+        	double width = image.getWidth();
+            double height = image.getHeight();
+            
+            System.out.println("Width: " + width + ", Height: " + height);
+            
+            if (width > 300 || height > 500) {
+            	UIServices.showAlert(AlertType.ERROR, "Invalid Image Dimensions", "Maximum allowed size is 300x500 pixels.");
+            }
+            else {
+            	profileManager.setImageFromFile(file);
+            }
         }
     }
     
@@ -552,23 +563,6 @@ public class ApplicantDetailsController {
         }
     }
 
-    public String encodeImageToBase64(File imageFile) {
-        try (FileInputStream fis = new FileInputStream(imageFile)) {
-            byte[] bytes = fis.readAllBytes();
-            return Base64.getEncoder().encodeToString(bytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
-
-    public Image decodeBase64ToImage(String base64) {
-    	if (base64 == null || base64.isBlank()) return null;
-    	byte[] imageBytes = Base64.getDecoder().decode(base64);
-    	return new Image(new ByteArrayInputStream(imageBytes));
-    }
-    
     @FXML
     private void onDeletePassportClicked() {
     	selectedPassportFile.set(null);
