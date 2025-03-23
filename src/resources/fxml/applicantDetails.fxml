@@ -344,7 +344,7 @@
 						</VBox>
 					</children>
 				</VBox>
-            <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmitClicked" style="-fx-background-color: #65558F; -fx-background-radius: 100;" text="Save and Submit" textFill="WHITE">
+            <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmitClicked" prefHeight="26.0" style="-fx-background-color: #65558F; -fx-background-radius: 100;" text="Save and Submit" textFill="WHITE">
                <font>
                   <Font name="Segoe UI" size="12.0" />
                </font>

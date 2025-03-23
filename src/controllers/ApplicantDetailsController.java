@@ -86,6 +86,7 @@ public class ApplicantDetailsController {
 	@FXML private VBox selectedDiplomaBox;
 	@FXML private Text diplomaFileName;
 	@FXML private Text diplomaFileSize;
+	@FXML private Button submitButton;
 
 
     @FXML
@@ -147,6 +148,8 @@ public class ApplicantDetailsController {
     	});
 
         if (isAdminView) {
+        	submitButton.setVisible(false);
+        	submitButton.setManaged(false);
         	profileDropArea.setVisible(false);
         	profileDropArea.setManaged(false);
         	updateProfPicButton.setVisible(false);
@@ -164,6 +167,9 @@ public class ApplicantDetailsController {
             
         } else if ("applicant".equals(role)) {
             currentApplicant = applicantDAO.getApplicantByUserId(session.getUserId());
+            if (currentApplicant.getStatus() == "Submitted") {
+            	disableEditing();
+            }
         } else {
         	System.out.println("No active application");
         }
@@ -597,8 +603,11 @@ public class ApplicantDetailsController {
     		saveAcademicQualification();
     		savePersonalDetails();
     		currentApplicant.setStatus("Submitted");
+    		disableEditing();
     		UIServices.showAlert(AlertType.INFORMATION, "Success", "Application submitted successfully!");
-    		
+    	}
+    	else {
+    		UIServices.showAlert(AlertType.ERROR, "Error", "Please fill all fields!");
     	}
     	
     }
