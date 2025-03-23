@@ -46,4 +46,15 @@ public class UserSession {
         selectedApplicantId = applicantId;
     }
     
+    private Object roleModel;
+
+    public Object getRoleModel() {
+        return roleModel;
+    }
+
+    public void setRoleModel(Object roleModel) {
+        this.roleModel = roleModel;
+    }
+
+    
 }

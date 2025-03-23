@@ -8,7 +8,7 @@ public class Applicant {
     private String lastName;
     private String nationality;
     private String dob; 
-    private int ukprn;
+    private String ukprn;
     private String certificate;
     private String institution;
     private String grade;
@@ -18,7 +18,7 @@ public class Applicant {
     private String status;
 
     public Applicant(String userId, String applicationId, String dateOfApplication, String name, String lastName,
-                     String nationality, String dob, int ukprn, String certificate, String institution, String grade,
+                     String nationality, String dob, String ukprn, String certificate, String institution, String grade,
                      String docDate,
                      String passportPath, String diplomaPath, String status) {
         this.userId = userId;
@@ -38,13 +38,14 @@ public class Applicant {
         this.status = status;
     }
     
-    public Applicant(String userId, String name, String applicationId, String dateOfApplication, String certificate, String grade, String status) {
+    public Applicant(String userId, String name, String applicationId, String dateOfApplication, String certificate, String grade, String ukprn, String status) {
     	this.userId = userId;
         this.name = name;
         this.applicationId = applicationId;
         this.dateOfApplication = dateOfApplication;
         this.certificate = certificate;
         this.grade = grade;
+        this.ukprn = ukprn;
         this.status = status;
     }
 
@@ -55,6 +56,7 @@ public class Applicant {
     public String getLastName() { return lastName; }
     public String getNationality() { return nationality; }
     public String getDob() { return dob; }
+    public String getUkprn() { return ukprn; }
     public String getCertificate() { return certificate; }
     public String getPreviousInstitution() { return institution; }
     public String getGrade() { return grade; }
@@ -70,7 +72,7 @@ public class Applicant {
     public void setLastName(String lastName) { this.lastName = lastName; }
     public void setNationality(String nationality) { this.nationality = nationality; }
     public void setDob(String dob) { this.dob = dob; }
-    public void setUkprn(int ukprn) { this.ukprn = ukprn; }
+    public void setUkprn(String ukprn) { this.ukprn = ukprn; }
     public void setCertificate(String certificate) { this.certificate = certificate; }
     public void setInstitution(String institution) { this.institution = institution; }
     public void setGrade(String grade) { this.grade = grade; }

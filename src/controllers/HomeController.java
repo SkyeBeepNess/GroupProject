@@ -1,11 +1,17 @@
 package controllers;
 
+import java.util.List;
+
+import dbhandlers.ApplicantDAO;
+import dbhandlers.DataBaseManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+import models.Admin;
+import models.Applicant;
 import services.NavigationService;
 import services.UIServices;
 import session.UserSession;
@@ -24,9 +30,16 @@ public class HomeController {
 		UserSession session = UserSession.getInstance();
 		
 		if ("applicant".equals(session.getRole())) {
+			Applicant applicantModel = ApplicantDAO.getApplicantByUserId(session.getUserId());
+			UserSession.getInstance().setRoleModel(applicantModel);
 			NavigationService.navigateTo("ApplicantDetails.fxml", "ApplicantDetails");
 		}
-		else if ("admin".equals(session.getRole())){
+		else if ("admin".equals(session.getRole()) || "superadmin".equals(session.getRole())){
+			/*
+			List<String> ukprns = DataBaseManager.getAdminUKPRNbyUserID(session.getUserId(), session.getRole());
+        	Admin adminModel = new Admin(session.getUserId(), ukprns);
+            UserSession.getInstance().setRoleModel(adminModel);
+            */
 			NavigationService.navigateTo("ApplicantListAdmin.fxml", "Applicant List");
 		}
 		else {
@@ -55,5 +68,11 @@ public class HomeController {
 		else {
 			UIServices.showAlert(AlertType.ERROR, "Access Denied", "You are not a student yet");
 		}
+	}
+	
+	@FXML
+    private void onLogOutClicked() {
+    	UserSession.clearSession();
+    	NavigationService.navigateTo("loginPage.fxml", "Login");		
 	}
 }

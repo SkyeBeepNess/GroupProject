@@ -7,7 +7,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+
+import models.Admin;
 
 public class DataBaseManager {
 
@@ -80,6 +85,31 @@ public class DataBaseManager {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    public static List<String> getAdminUKPRNbyUserID(String userID, String role){
+    	List<String> ukprns = new ArrayList<>();
+    	String sql;
+    	boolean isSuperadmin = "superadmin".equals(role);
+    	if (isSuperadmin) {
+    		sql = "SELECT DISTINCT ukprn FROM institution";
+    	}
+    	else {
+    		sql = "SELECT ukprn FROM admin_university_access WHERE userId = ?";
+    	}
+        try (PreparedStatement stmt = connection.prepareStatement(sql.toString())){
+        	if (!isSuperadmin) {
+        		stmt.setObject(1, userID);
+        	}
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				ukprns.add(rs.getString("ukprn"));
+			}
+			
+		} catch (Exception e) {
+            e.printStackTrace();
+		}
+        return ukprns;
     }
     
     public static String generateNewUserId() {

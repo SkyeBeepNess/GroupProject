@@ -2,15 +2,21 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -38,6 +44,11 @@
 						<Font name="Segoe UI Bold" size="18.0" />
 					</font>
 				</Text>
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="484.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onLogOutClicked" prefHeight="50.0" prefWidth="115.0" style="-fx-background-color: transparent;" text="Log Out" textFill="WHITE">
+               <font>
+                  <Font name="Segoe UI" size="14.0" />
+               </font>
+            </Button>
 			</children>
 		</AnchorPane>
 		<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="44.0" prefWidth="600.0">
@@ -56,7 +67,7 @@
 		</AnchorPane>
 		<AnchorPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="307.0" prefWidth="600.0">
 			<children>
-				<Button alignment="CENTER" contentDisplay="RIGHT" graphicTextGap="6.0" layoutX="14.0" layoutY="6.0" mnemonicParsing="false" onAction="#onFilterClicked" prefHeight="23.0" prefWidth="165.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Filter by University" textFill="#333333">
+				<Button alignment="CENTER" contentDisplay="RIGHT" graphicTextGap="6.0" layoutX="14.0" layoutY="6.0" mnemonicParsing="false" onAction="#onFilterClicked" prefHeight="26.0" prefWidth="78.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Filter" textFill="#333333" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
 					<font>
 						<Font name="Segoe UI Bold" size="12.0" />
 					</font>
@@ -68,7 +79,19 @@
 						</ImageView>
 					</graphic>
 				</Button>
-				<TextField fx:id="searchTextField" layoutX="187.0" layoutY="4.0" prefHeight="26.0" prefWidth="400.0" promptText="Search by name or ApplicationID" style="-fx-background-color: #FFFFFF; -fx-background-radius: 100;">
+            <Button alignment="CENTER" contentDisplay="RIGHT" graphicTextGap="6.0" layoutX="95.0" layoutY="6.0" mnemonicParsing="false" onAction="#onFilterClicked" prefHeight="26.0" prefWidth="63.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Sort" textFill="#333333" AnchorPane.topAnchor="5.0">
+               <font>
+                  <Font name="Segoe UI Bold" size="12.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="14.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../img/filter.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+				<TextField fx:id="searchTextField" layoutX="97.0" layoutY="4.0" prefHeight="26.0" prefWidth="423.0" promptText="Search by name or ApplicationID" style="-fx-background-color: #FFFFFF; -fx-background-radius: 100;" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
 					<padding>
 						<Insets left="6.0" right="25.0" />
 					</padding>
@@ -83,31 +106,103 @@
 						<Image url="@../img/search.png" />
 					</image>
 				</ImageView>
-				<TableView fx:id="applicantTable" layoutX="14.0" layoutY="37.0" prefHeight="229.0" prefWidth="574.0">
+				<TableView fx:id="applicantTable" layoutX="14.0" layoutY="37.0" prefHeight="230.0" prefWidth="591.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="-1.0">
 					<columns>
-						<TableColumn fx:id="colApplicantName" prefWidth="119.20001220703125" text="Applicant Name" />
-						<TableColumn fx:id="colDate" prefWidth="64.79998779296875" text="Date" />
-						<TableColumn fx:id="colCertificate" prefWidth="118.4000244140625" text="Certificate" />
-						<TableColumn fx:id="colGrade" prefWidth="68.800048828125" text="Grade" />
-						<TableColumn fx:id="colApplicationId" prefWidth="123.99993896484375" text="ApplicationID" />
-						<TableColumn fx:id="colStatus" prefWidth="76.00002441406252" text="Status" />
+						<TableColumn fx:id="colApplicantName" prefWidth="99.20001065731049" text="Applicant Name" />
+						<TableColumn fx:id="colDate" prefWidth="71.99994659423828" text="Date" />
+						<TableColumn fx:id="colCertificate" prefWidth="116.0" text="Certificate" />
+						<TableColumn fx:id="colGrade" prefWidth="66.4000244140625" text="Grade" />
+						<TableColumn fx:id="colApplicationId" prefWidth="96.0" text="ApplicationID" />
+                  <TableColumn fx:id="colUKPRN" prefWidth="70.39993286132812" text="UKPRN" />
+						<TableColumn fx:id="colStatus" maxWidth="184.7999267578125" prefWidth="60.79998779296875" text="Status" />
 					</columns>
 				</TableView>
-				<Button fx:id="rejectButton" layoutX="289.0" layoutY="270.0" mnemonicParsing="false" onAction="#onRejectClicked" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Reject" textFill="#333333">
+				<Button fx:id="rejectButton" layoutX="289.0" layoutY="270.0" mnemonicParsing="false" onAction="#onRejectClicked" prefHeight="26.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Reject" textFill="#333333" AnchorPane.bottomAnchor="8.0">
 					<font>
 						<Font name="Segoe UI Bold" size="12.0" />
 					</font>
 				</Button>
-				<Button fx:id="viewDetailsButton" layoutX="495.0" layoutY="270.0" mnemonicParsing="false" onAction="#viewApplicantDetails" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="View Details" textFill="#333333">
+				<Button fx:id="viewDetailsButton" layoutX="495.0" layoutY="270.0" mnemonicParsing="false" onAction="#viewApplicantDetails" prefHeight="26.0" prefWidth="90.0" style="-fx-background-color: #65558F; -fx-background-radius: 100;" text="View Details" textFill="WHITE" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="11.0">
 					<font>
 						<Font name="Segoe UI Bold" size="12.0" />
 					</font>
 				</Button>
-				<Button fx:id="acceptButton" layoutX="387.0" layoutY="270.0" mnemonicParsing="false" onAction="#onAcceptClicked" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Accept" textFill="#333333">
+				<Button fx:id="acceptButton" layoutX="387.0" layoutY="270.0" mnemonicParsing="false" onAction="#onAcceptClicked" prefHeight="26.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Accept" textFill="#333333" AnchorPane.bottomAnchor="8.0">
 					<font>
 						<Font name="Segoe UI Bold" size="12.0" />
 					</font>
 				</Button>
+            <StackPane fx:id="filterOverlay" alignment="TOP_LEFT" layoutX="10.0" layoutY="36.8" prefHeight="267.0" prefWidth="600.0" style="-fx-background-color: rgba(0, 0, 0, 0.3);" visible="false" AnchorPane.rightAnchor="-3.0" AnchorPane.topAnchor="37.0">
+               <children>
+                  <VBox prefHeight="253.0" prefWidth="572.0">
+                     <children>
+                        <TitledPane animated="false" text="Filter by Date of Application">
+                           <content>
+                              <VBox prefWidth="100.0">
+                                 <children>
+                                    <GridPane hgap="10.0" prefHeight="52.0" prefWidth="330.0" vgap="15.0" VBox.vgrow="SOMETIMES">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="264.4000244140625" minWidth="10.0" prefWidth="40.80001602172851" />
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="516.7999736785889" minWidth="10.0" prefWidth="499.99998397827153" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <DatePicker fx:id="startDate" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <DatePicker fx:id="endDate" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <Label text="From:" GridPane.rowIndex="1">
+                                             <font>
+                                                <Font name="Segoe UI" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label text="To:" GridPane.rowIndex="2">
+                                             <font>
+                                                <Font name="Segoe UI" size="12.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </GridPane>
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane animated="false" maxHeight="1.7976931348623157E308" prefHeight="222.0" prefWidth="572.0" text="Filter by UKPRN">
+                           <content>
+                              <AnchorPane prefHeight="191.0" prefWidth="570.0">
+                                 <children>
+                                    <ScrollPane fx:id="ukprnFilter" layoutX="20.0" prefHeight="131.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="514.0" />
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </TitledPane>
+                        <HBox spacing="5.0">
+                           <children>
+                              <Button fx:id="applyFilterButton" mnemonicParsing="false" onAction="#handleApplyFilters" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Apply Filter" textFill="#333333">
+                                 <font>
+                                    <Font name="Segoe UI Bold" size="12.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="closeFilterButton" mnemonicParsing="false" onAction="#onCloseFilterClicked" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Close Filter" textFill="#333333">
+                                 <font>
+                                    <Font name="Segoe UI Bold" size="12.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets left="14.0" right="14.0" />
+               </padding>
+            </StackPane>
 			</children>
 			
 		</AnchorPane>

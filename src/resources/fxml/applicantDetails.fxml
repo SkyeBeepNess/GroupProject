@@ -34,6 +34,11 @@
 					<Font name="Segoe UI Bold" size="18.0" />
 				</font>
 			</Text>
+         <Button alignment="CENTER" contentDisplay="CENTER" layoutX="484.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onLogOutClicked" prefHeight="50.0" prefWidth="115.0" style="-fx-background-color: transparent;" text="Log Out" textFill="WHITE">
+            <font>
+               <Font name="Segoe UI" size="14.0" />
+            </font>
+         </Button>
 		</children>
 	</AnchorPane>
 
@@ -67,7 +72,7 @@
 								</HBox>
 							</graphic>
 						</Button>
-						<VBox fx:id="personalDetailsVbox" managed="false" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" visible="false">
+						<VBox fx:id="personalDetailsVbox" managed="false" prefWidth="146.0" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" visible="false">
 							<Label text="First Name:">
 								<font>
 									<Font name="Segoe UI" size="14.0" />
@@ -100,7 +105,7 @@
 									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</Label>	
-                     <VBox fx:id="selectedPassportBox" prefWidth="100.0" visible="false" managed="false">
+                     <VBox fx:id="selectedPassportBox" managed="false" prefWidth="100.0" visible="false">
                         <children>
                            
                            <HBox alignment="CENTER" prefWidth="200.0" style="-fx-background-color: #EDEBEB; -fx-background-radius: 20;">
@@ -132,7 +137,7 @@
                                        <Insets left="3.0" right="3.0" />
                                     </HBox.margin>
                                  </VBox>
-                                 <Button mnemonicParsing="false" onAction="#onDeletePassportClicked" style="-fx-background-color: transparent;">
+                                 <Button fx:id="deletePassportButton" mnemonicParsing="false" onAction="#onDeletePassportClicked" style="-fx-background-color: transparent;">
                                     <graphic>
                                        <ImageView fitHeight="31.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                           <image>
@@ -227,7 +232,7 @@
 									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</Label>	
-							<VBox fx:id="selectedDiplomaBox" prefWidth="100.0" visible="false" managed="false">
+							<VBox fx:id="selectedDiplomaBox" managed="false" prefWidth="100.0" visible="false">
     							<children>
         							<HBox alignment="CENTER" prefWidth="200.0" style="-fx-background-color: #EDEBEB; -fx-background-radius: 20;">
             							<children>
@@ -250,7 +255,7 @@
                    								</children>
                     							<HBox.margin><Insets left="3.0" right="3.0" /></HBox.margin>
                 							</VBox>
-                							<Button mnemonicParsing="false" onAction="#onDeleteDiplomaClicked" style="-fx-background-color: transparent;">
+                							<Button fx:id="deleteDiplomaButton" mnemonicParsing="false" onAction="#onDeleteDiplomaClicked" style="-fx-background-color: transparent;">
                					     			<graphic>
                         							<ImageView fitHeight="31.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                    						         		<image>

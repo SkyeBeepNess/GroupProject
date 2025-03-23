@@ -12,12 +12,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
+
 import models.Applicant;
+import models.Admin;
 import session.UserSession;
 import services.NavigationService;
 import services.UIServices;
@@ -28,6 +31,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 public class ApplicantDetailsController {
     
@@ -43,6 +47,7 @@ public class ApplicantDetailsController {
     private ApplicantDAO applicantDAO;
     private Applicant currentApplicant;
     private boolean isAdminView;
+    
 
     @FXML private Text applicationIdField;
     @FXML private TextField firstNameField, lastNameField, nationalityField, certificateField, gradeField, institutionField;
@@ -50,6 +55,7 @@ public class ApplicantDetailsController {
    // @FXML private TextField passportField, diplomaField;
     @FXML private DatePicker dobPicker, docPicker;
     @FXML private Button toggleButton1, toggleButton2, savePDButton, saveAQButton;
+    @FXML private Button deletePassportButton, deleteDiplomaButton;
     @FXML private ImageView pdStatusImg, aqStatusImg, aqArrowImg, pdArrowImg;;
     @FXML private VBox personalDetailsVbox, academicalQualificationVbox;
     @FXML private VBox selectedPassportBox;
@@ -66,6 +72,16 @@ public class ApplicantDetailsController {
 
     @FXML
     private void initialize() {
+    	applicantDAO = new ApplicantDAO();
+    	Object roleModel = UserSession.getInstance().getRoleModel();
+        String role = session.getRole();
+        String selectedApplicantId = session.getSelectedApplicantId();
+    	isAdminView = "admin".equals(role);
+    	/*
+    	if (isAdminView) {
+    		Admin admin = (Admin) roleModel;
+    	}
+    	*/
     	
     	selectedPassportFile.addListener((obs, oldFile, newFile) -> {
             if (newFile != null) {
@@ -75,6 +91,10 @@ public class ApplicantDetailsController {
                 selectedPassportBox.setManaged(true);
                 passportFileName.setText(newFile.getName());
                 passportFileSize.setText("File size: " + newFile.length() / 1000 + "KB");
+                if (isAdminView) {
+    	        	deletePassportButton.setManaged(false);
+    	        	deletePassportButton.setVisible(false);
+    	        }
             } else {
                 selectedPassportBox.setVisible(false);
                 selectedPassportBox.setManaged(false);
@@ -93,6 +113,11 @@ public class ApplicantDetailsController {
     	        selectedDiplomaBox.setManaged(true);
     	        diplomaFileName.setText(newFile.getName());
     	        diplomaFileSize.setText("File size: " + newFile.length() / 1000 + "KB");
+    	        if (isAdminView) {
+    	        	deleteDiplomaButton.setManaged(false);
+    	        	deleteDiplomaButton.setVisible(false);
+    	        }
+    	        
     	    } else {
     	        selectedDiplomaBox.setVisible(false);
     	        selectedDiplomaBox.setManaged(false);
@@ -103,16 +128,12 @@ public class ApplicantDetailsController {
     	    }
     	});
 
-    	
-    	applicantDAO = new ApplicantDAO();
-        String role = session.getRole();
-        String selectedApplicantId = session.getSelectedApplicantId();
-
-        isAdminView = "admin".equals(role);
-
         if (isAdminView) {
         	passportDropArea.setVisible(false);
             passportDropArea.setManaged(false);
+            diplomaDropArea.setVisible(false);
+	        diplomaDropArea.setManaged(false);
+	       
             if (selectedApplicantId != null) {
                 currentApplicant = applicantDAO.getApplicantByUserId(selectedApplicantId);
                 //disableEditing();
@@ -164,8 +185,6 @@ public class ApplicantDetailsController {
                 System.out.println("Diploma file restored from path: " + file.getAbsolutePath());
             }
         }
-        
-        
     }
     
     private void configureDatePicker(DatePicker datePicker) {
@@ -321,11 +340,11 @@ public class ApplicantDetailsController {
     private void updateStatusIcons() {
         boolean personalComplete = !firstNameField.getText().trim().isEmpty() &&
                                    !nationalityField.getText().trim().isEmpty() &&
-                                   dobPicker.getValue() != null;
+                                   dobPicker.getValue() != null && selectedPassportFile.get() != null;
 
         boolean academicComplete = !certificateField.getText().trim().isEmpty() &&
                                    !institutionField.getText().trim().isEmpty() &&
-                                   docPicker.getValue() != null;
+                                   docPicker.getValue() != null && selectedDiplomaFile.get() != null;
 
         pdStatusImg.setImage(personalComplete ? checkImage : exclamationImage);
         aqStatusImg.setImage(academicComplete ? checkImage : exclamationImage);
@@ -454,6 +473,14 @@ public class ApplicantDetailsController {
     @FXML
     private void onDeleteDiplomaClicked() {
         selectedDiplomaFile.set(null);
+    }
+    
+    @FXML
+    private void onLogOutClicked() {
+    	UserSession.clearSession();
+    	selectedPassportFile.set(null);
+    	selectedDiplomaFile.set(null);
+    	NavigationService.navigateTo("loginPage.fxml", "Login");
     }
 
 }

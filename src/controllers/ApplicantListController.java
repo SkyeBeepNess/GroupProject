@@ -2,6 +2,9 @@ package controllers;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import dbhandlers.ApplicantDAO;
 import dbhandlers.DataBaseManager;
@@ -16,19 +19,24 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import models.Admin;
 import models.Applicant;
 import services.NavigationService;
 import services.UIServices;
@@ -42,6 +50,7 @@ public class ApplicantListController {
     @FXML private TableColumn<Applicant, String> colCertificate;
     @FXML private TableColumn<Applicant, String> colGrade;
     @FXML private TableColumn<Applicant, String> colApplicationId;
+    @FXML private TableColumn<Applicant, String> colUKPRN;
     @FXML private TableColumn<Applicant, String> colStatus;
     @FXML private Button viewDetailsButton;
     @FXML private Button rejectButton;
@@ -57,11 +66,25 @@ public class ApplicantListController {
     @FXML private Text fileName;
 	@FXML private Text fileSize;
 	@FXML private Button submitFileButton;
+	@FXML private ScrollPane ukprnFilter;
+	@FXML private StackPane filterOverlay;
+	@FXML private DatePicker startDate;
+	@FXML private DatePicker endDate;
 	
+	private Admin admin;
+	private GridPane ukprnGrid = new GridPane();
+	private ArrayList<CheckBox> checkboxes = new ArrayList<>();
+	private List<String> ukprns;
 
     @FXML
     private void initialize() {
-        loadApplicants();
+    	//admin = (Admin) UserSession.getInstance().getRoleModel();
+    	ukprns = DataBaseManager.getAdminUKPRNbyUserID(UserSession.getInstance().getUserId(), UserSession.getInstance().getRole());
+    	admin = new Admin(UserSession.getInstance().getUserId(), ukprns);
+    	filterOverlay.setVisible(false);
+    	
+        loadApplicants(null, null, ukprns);
+        configureFilterGrid();
     	
     	viewDetailsButton.setDisable(true);
     	rejectButton.setDisable(true);
@@ -85,16 +108,33 @@ public class ApplicantListController {
             }
         });
     }
+    
+    private void configureFilterGrid() {
+    	List<String> ukprns = admin.getManagedUKPRN(); 
+    	ukprnGrid.setHgap(15);
+    	ukprnGrid.setVgap(0);
+    	for (int i = 0; i < ukprns.size(); i++) {
+    		CheckBox ukprnCheckBox = new CheckBox();
+    		ukprnCheckBox.setText(ukprns.get(i));
+    		ukprnCheckBox.setId(ukprns.get(i));
+    		checkboxes.add(ukprnCheckBox);
+    		GridPane.setColumnIndex(ukprnCheckBox, i % 6);
+            GridPane.setRowIndex(ukprnCheckBox, i / 6);
+		}
+    	ukprnGrid.getChildren().addAll(checkboxes);
+    	ukprnFilter.setContent(ukprnGrid);
+    }
 
-    private void loadApplicants() {
+    private void loadApplicants(String stDate, String enDate, List<String> ukprnFiltered) {
         applicants.clear();
-        applicants.addAll(applicantDAO.getAllApplicants());
+        applicants.addAll(applicantDAO.getApplicantsBy(stDate, enDate, ukprnFiltered));
 
         colApplicantName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("dateOfApplication"));
         colCertificate.setCellValueFactory(new PropertyValueFactory<>("certificate"));
         colGrade.setCellValueFactory(new PropertyValueFactory<>("grade"));
         colApplicationId.setCellValueFactory(new PropertyValueFactory<>("applicationId"));
+        colUKPRN.setCellValueFactory(new PropertyValueFactory<>("ukprn"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         applicantTable.setItems(applicants);
@@ -210,8 +250,40 @@ public class ApplicantListController {
     
     @FXML
     private void onFilterClicked() {
+    	boolean isVisible = !filterOverlay.isVisible();
+    	filterOverlay.setVisible(isVisible);
     }
     
+    @FXML
+    private void onCloseFilterClicked() {
+    	filterOverlay.setVisible(false);
+    }
+    
+    private List<String> getSelectedUkprns() {
+        List<String> selected = new ArrayList<>();
+        for (CheckBox cb : checkboxes) {
+            if (cb.isSelected()) {
+                selected.add(cb.getText());
+            }
+        }
+        return selected != null ? selected : ukprns;
+    }
+        
+    @FXML
+    private void handleApplyFilters() {
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    	String stDate = startDate.getValue() != null ? startDate.getValue().format(formatter) : null;
+    	String enDate = endDate.getValue() != null ? endDate.getValue().format(formatter) : null;
+    	System.out.println(stDate + " - " + enDate);
+    	List<String> toFilterUKPRN = getSelectedUkprns();
+    	System.out.println(toFilterUKPRN);
+    	
+    	loadApplicants(stDate, enDate, toFilterUKPRN);
+    	filterOverlay.setVisible(false);    	
+    }
+    
+    @FXML
+    private void onSortClicked() {}
     @FXML
     private void onSearchClicked() {
     }
@@ -231,5 +303,14 @@ public class ApplicantListController {
     
     @FXML
     private void onAcceptClicked() {}
+    
+    @FXML
+    private void onLogOutClicked() {
+    	UserSession.clearSession();
+    	ukprns.clear();
+    	startDate = null;
+    	endDate = null;
+    	NavigationService.navigateTo("loginPage.fxml", "Login");
+    }
     
 }

@@ -6,16 +6,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ApplicantDAO {
-    private final Connection connection;
+    private static Connection connection = null;
 
     public ApplicantDAO() {
-        this.connection = DataBaseManager.getInstance().getConnection();
+        ApplicantDAO.connection = DataBaseManager.getInstance().getConnection();
     }
 
-    public Applicant getApplicantByUserId(String userId) {
+    public static Applicant getApplicantByUserId(String userId) {
         String sql = "SELECT * FROM applicants WHERE UserID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, userId);
@@ -35,7 +36,7 @@ public class ApplicantDAO {
                     lastName, 
                     rs.getString("Nationality"),
                     rs.getString("DateOfBirth"),
-                    rs.getInt("ukprn"),
+                    rs.getString("ukprn"),
                     rs.getString("Certificate"),
                     rs.getString("PreviousInstitution"),
                     rs.getString("Grade"),
@@ -99,6 +100,7 @@ public class ApplicantDAO {
                         rs.getString("Date of Application"),
                         rs.getString("Certificate"),
                         rs.getString("Grade"),
+                        rs.getString("ukprn"),
                         rs.getString("Status")
                 ));
             }
@@ -137,5 +139,62 @@ public class ApplicantDAO {
         }
     }
     
+    public List<Applicant> getApplicantsBy(String stDate, String enDate, List<String> ukprns) {
+        List<Applicant> applicants = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("""
+            SELECT UserID, "Applicant Name", ApplicationID, "Date of Application", Certificate, Grade, UKPRN, Status 
+            FROM applicants WHERE 1=1
+        """);
+
+        List<Object> parameters = new ArrayList<>();
+
+        if (stDate != null && !stDate.isBlank() && enDate != null && !enDate.isBlank()) {
+        	sql.append("""
+        		    AND DATE(substr("Date of Application", 7, 4) || '-' || substr("Date of Application", 4, 2) || '-' || substr("Date of Application", 1, 2))
+        		    BETWEEN DATE(?) AND DATE(?)
+        		""");
+            parameters.add(stDate);
+            parameters.add(enDate);
+        } else if (stDate != null && !stDate.isBlank()) {
+            sql.append(" AND DATE(substr(\"Date of Application\", 7, 4) || '-' || substr(\"Date of Application\", 4, 2) || '-' || substr(\"Date of Application\", 1, 2)) >= ?");
+            parameters.add(stDate);
+        } else if (enDate != null && !enDate.isBlank()) {
+            sql.append(" AND DATE(substr(\"Date of Application\", 7, 4) || '-' || substr(\"Date of Application\", 4, 2) || '-' || substr(\"Date of Application\", 1, 2)) <= ?");
+            parameters.add(enDate);
+        }
+
+        if (ukprns != null && !ukprns.isEmpty()) {
+            sql.append(" AND UKPRN IN (");
+            sql.append(String.join(",", Collections.nCopies(ukprns.size(), "?")));
+            sql.append(")");
+            parameters.addAll(ukprns);
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < parameters.size(); i++) {
+                stmt.setObject(i + 1, parameters.get(i));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                applicants.add(new Applicant(
+                    rs.getString("UserID"),
+                    rs.getString("Applicant Name"),
+                    rs.getString("ApplicationID"),
+                    rs.getString("Date of Application"),
+                    rs.getString("Certificate"),
+                    rs.getString("Grade"),
+                    rs.getString("UKPRN"),
+                    rs.getString("Status")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return applicants;
+    }
+
 
 }
