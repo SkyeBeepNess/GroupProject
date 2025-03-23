@@ -45,7 +45,15 @@ public class UserSession {
     public static void setSelectedApplicantId(String applicantId) {
         selectedApplicantId = applicantId;
     }
-    
+    private static String selectedStudentId;
+
+    public static String getSelectedStudentId() {
+        return selectedStudentId;
+    }
+
+    public static void setSelectedStudentId(String StudentId) {
+    	selectedStudentId = StudentId;
+    }
     private Object roleModel;
 
     public Object getRoleModel() {
