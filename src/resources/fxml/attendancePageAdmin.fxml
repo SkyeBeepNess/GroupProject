@@ -20,7 +20,7 @@
 
 <AnchorPane maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #D9D9D9;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AttendanceAdminController">
 
-	<VBox prefHeight="400.0" prefWidth="600.0">
+	<VBox prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
 		<!-- Top Bar -->
 		<AnchorPane maxHeight="282.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #65558F;">
 			<children>
@@ -41,105 +41,136 @@
 				</Text>
 			</children>
 		</AnchorPane>
-		<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="44.0" prefWidth="600.0">
+      <VBox prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <HBox alignment="CENTER">
+               <children>
+      				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Attendance Dashboard" wrappingWidth="182.13671875">
+      					<font>
+      						<Font name="Segoe UI Bold" size="16.0" />
+      					</font>
+                     <HBox.margin>
+                        <Insets left="190.0" />
+                     </HBox.margin>
+      				</Text>
+      				<Button fx:id="importCSVButton" mnemonicParsing="false" onMouseClicked="#openImportCSVOverlay" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Import CSV" textFill="#333333">
+      					<font>
+      						<Font name="Segoe UI Bold" size="12.0" />
+      					</font>
+                     <HBox.margin>
+                        <Insets left="100.0" />
+                     </HBox.margin>
+      				</Button>
+               </children>
+               <VBox.margin>
+                  <Insets top="8.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+      				<Button fx:id="filterButton" alignment="CENTER" contentDisplay="RIGHT" graphicTextGap="6.0" mnemonicParsing="false" onAction="#filterClicked" prefHeight="23.0" prefWidth="68.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Filter" textFill="#333333">
+      					<font>
+      						<Font name="Segoe UI Bold" size="12.0" />
+      					</font>
+      					<graphic>
+      						<ImageView fitHeight="14.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+      							<image>
+      								<Image url="@../img/filter.png" />
+      							</image>
+      						</ImageView>
+      					</graphic>
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+      				</Button>
+      				<TextField fx:id="searchTextField" prefHeight="25.0" prefWidth="460.0" promptText="Search by name or StudentID" style="-fx-background-color: #FFFFFF; -fx-background-radius: 100;">
+      					<padding>
+      						<Insets left="6.0" />
+      					</padding>
+      				</TextField>
+      				<Button fx:id="handleSearch" contentDisplay="RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleSearch" style="-fx-background-color: transparent; -fx-background-radius: 0;" textFill="#333333">
+      					<font>
+      						<Font name="Segoe UI Bold" size="12.0" />
+      					</font>
+                     <graphic>
+            						<ImageView fitHeight="24.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+            							<image>
+            								<Image url="@../img/search.png" />
+            							</image>
+            						</ImageView>
+                     </graphic>
+      				</Button>
+               </children>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+		<AnchorPane minHeight="-Infinity" prefHeight="267.0" prefWidth="600.0">
 			<children>
-				<Text layoutX="209.0" layoutY="28.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attendance Dashboard" wrappingWidth="182.13671875">
-					<font>
-						<Font name="Segoe UI Bold" size="16.0" />
-					</font>
-				</Text>
-				<Button fx:id="importCSVButton" layoutX="496.0" layoutY="11.0" mnemonicParsing="false" onMouseClicked="#openImportCSVOverlay" prefHeight="23.0" prefWidth="90.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Import CSV" textFill="#333333">
-					<font>
-						<Font name="Segoe UI Bold" size="12.0" />
-					</font>
-				</Button>
-			</children>
-		</AnchorPane>
-		<AnchorPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="307.0" prefWidth="600.0">
-			<children>
-				<Button fx:id="filterButton" alignment="CENTER" contentDisplay="RIGHT" graphicTextGap="6.0" layoutX="14.0" layoutY="6.0" mnemonicParsing="false" onMouseClicked="#filterClicked" prefHeight="23.0" prefWidth="68.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Filter" textFill="#333333">
-					<font>
-						<Font name="Segoe UI Bold" size="12.0" />
-					</font>
-					<graphic>
-						<ImageView fitHeight="14.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@../img/filter.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</Button>
-				<Button layoutX="329.0" layoutY="5.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="75.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Select all" textFill="#333333">
-					<font>
-						<Font name="Segoe UI Bold" size="12.0" />
-					</font>
-				</Button>
-				<TextField fx:id="searchTextField" layoutX="95.0" layoutY="5.0" prefHeight="25.0" prefWidth="191.0" promptText="Search by name or StudentID" style="-fx-background-color: #FFFFFF; -fx-background-radius: 100;">
-					<padding>
-						<Insets left="6.0" right="25.0" />
-					</padding>
-				</TextField>
-				<Button layoutX="414.0" layoutY="5.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="172.0" style="-fx-background-color: #D0BCFF; -fx-background-radius: 100;" text="Mark selected attendance" textFill="#333333">
-					<font>
-						<Font name="Segoe UI Bold" size="12.0" />
-					</font>
-				</Button>
-				<Button fx:id="handleSearch" contentDisplay="RIGHT" layoutX="256.0" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleSearch" style="-fx-background-color: transparent; -fx-background-radius: 0;" textFill="#333333">
-					<font>
-						<Font name="Segoe UI Bold" size="12.0" />
-					</font>
-					<graphic>
-						<ImageView fitHeight="14.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@../img/search.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</Button>
-				<ScrollPane fx:id="scrollablePane" fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+				<ScrollPane fx:id="scrollablePane" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="600.0" prefHeight="200.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 					<content>
 						<VBox fx:id="coursesContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" />
 					</content>
 				</ScrollPane>
-				<StackPane fx:id="filterOverlay" alignment="TOP_LEFT" layoutY="-93.0" prefHeight="400.0" prefWidth="586.0" style="-fx-background-color: rgba(0, 0, 0, 0.3);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
-					<children>
-						<VBox prefHeight="283.0" prefWidth="572.0">
-							<children>
-								<TitledPane animated="false" text="Filter by date">
-									<content>
-										<VBox prefWidth="100.0">
-											<children>
-												<DatePicker fx:id="startDate" editable="false" />
-												<DatePicker fx:id="endDate" editable="false" />
-											</children>
-										</VBox>
-									</content>
-								</TitledPane>
-								<TitledPane animated="false" maxHeight="1.7976931348623157E308" prefHeight="222.0" prefWidth="572.0" text="Filter by course ID">
-									<content>
-										<AnchorPane prefHeight="191.0" prefWidth="570.0">
-											<children>
-												<ScrollPane fx:id="courseIDFilter" layoutX="20.0" prefHeight="131.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
-													<content>
-														<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-													</content>
-												</ScrollPane>
-											</children>
-										</AnchorPane>
-									</content>
-								</TitledPane>
-								<AnchorPane maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT">
-									<children>
-										<Button fx:id="applyFilterButton" mnemonicParsing="false" onMouseClicked="#handleApplyFilters" text="Apply Filter" />
-									</children>
-								</AnchorPane>
-							</children>
-						</VBox>
-					</children>
-					<padding>
-						<Insets left="14.0" right="14.0" />
-					</padding>
-				</StackPane>
+         				<StackPane fx:id="filterOverlay" alignment="TOP_LEFT" layoutY="-93.0" prefHeight="277.0" prefWidth="600.0" style="-fx-background-color: rgba(0, 0, 0, 0.3);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-17.0">
+         					<children>
+         						<VBox>
+         							<children>
+         								<TitledPane animated="false" text="Filter by date">
+         									<content>
+         										<VBox prefWidth="100.0">
+         											<children>
+                                    <HBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <Label text="Start Date:" />
+               												<DatePicker fx:id="startDate" editable="false">
+                                             <HBox.margin>
+                                                <Insets left="10.0" />
+                                             </HBox.margin>
+                                          </DatePicker>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <Label text="End Date:" />
+               												<DatePicker fx:id="endDate" editable="false">
+                                             <HBox.margin>
+                                                <Insets left="15.0" />
+                                             </HBox.margin>
+                                          </DatePicker>
+                                       </children>
+                                    </HBox>
+         											</children>
+         										</VBox>
+         									</content>
+         								</TitledPane>
+         								<TitledPane animated="false" maxHeight="1.7976931348623157E308" prefHeight="152.0" prefWidth="572.0" text="Filter by course ID">
+         									<content>
+         										<AnchorPane prefHeight="191.0" prefWidth="570.0">
+         											<children>
+         												<ScrollPane fx:id="courseIDFilter" layoutX="20.0" prefHeight="131.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
+         													<content>
+         														<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+         													</content>
+         												</ScrollPane>
+         											</children>
+         										</AnchorPane>
+         									</content>
+         								</TitledPane>
+                        <HBox alignment="TOP_RIGHT">
+                           <children>
+         										<Button fx:id="applyFilterButton" mnemonicParsing="false" onMouseClicked="#handleApplyFilters" text="Apply Filter" />
+                           </children>
+                        </HBox>
+         							</children>
+         						</VBox>
+         					</children>
+         					<padding>
+         						<Insets left="14.0" right="14.0" />
+         					</padding>
+         				</StackPane>
 			</children>
 		</AnchorPane>
 

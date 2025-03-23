@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -21,6 +22,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -187,104 +189,136 @@ public class AttendanceAdminController {
 	
     
     private void loadCourses(List<String> coursesList, List<LocalDate> dateRange, String searchInput) {
+        // Clear the container before adding new content
         coursesContainer.getChildren().clear();
         
-        List<String> courseIDs = (coursesList == null || coursesList.isEmpty()  ) ? currentAdmin.getManagedCourses() : coursesList;
+        // Ensure the scroll pane fits its content width to avoid horizontal scrolling
+        scrollablePane.setFitToWidth(true);
+        
+        // Determine which course IDs to load
+        List<String> courseIDs = (coursesList == null || coursesList.isEmpty())
+                ? currentAdmin.getManagedCourses()
+                : coursesList;
 
+        // Fetch students for those courses (filtered by date range and search input, if provided)
         List<Student> students = dbHelper.getStudentsForCourse(courseIDs, dateRange, searchInput);
+        if (students.isEmpty()) {
+        	Label noresults = new Label("Sorry, your search didn't match any attendance records. Please try again with different search and/or filters");
+			coursesContainer.getChildren().add(noresults);
+		}
+        // Group students by course ID
         Map<String, List<Student>> studentsByCourse = new HashMap<>();
-
         for (Student student : students) {
             studentsByCourse
                 .computeIfAbsent(student.getCourseID(), k -> new ArrayList<>())
                 .add(student);
         }
-
+        
+        // Build a TitledPane + GridPane for each course
         for (String courseID : studentsByCourse.keySet()) {
             double courseAttendance = 0.0;
 
-            // Create and configure titled pane
+            // --- Create and configure TitledPane ---
             TitledPane coursePane = new TitledPane();
             coursePane.setExpanded(false);
-            //coursePane.setMaxWidth(Double.MAX_VALUE);
-            
-            // Create left side with course title
-            Label titleLabel = new Label();
-            HBox leftSide = new HBox(titleLabel);
-            leftSide.setAlignment(Pos.CENTER_LEFT);
-            
-            // Create right side with attendance info
-            Label overallAttText = new Label("Selected attendance:");
+            coursePane.setMaxWidth(Double.MAX_VALUE);
+
+            // Truncate the course ID if it's too long
+            String truncatedCourse = courseID.length() > 30 ? courseID.substring(0, 30) + "..." : courseID;
+
+            // Header: course title and overall attendance info
+            Label titleLabel = new Label("Course ID: " + truncatedCourse + " ");
+            titleLabel.setMinWidth(320);
+            Label overallAttText = new Label("Overall attendance: ");
             ProgressBar progressBar = new ProgressBar();
             progressBar.setPrefWidth(100);
             Label percentLabel = new Label();
-            HBox rightSide = new HBox(10, overallAttText, progressBar, percentLabel);
-            rightSide.setAlignment(Pos.CENTER_RIGHT);
-            
-            // Create main header container and add both sides
+
             HBox header = new HBox();
             header.setMaxWidth(Double.MAX_VALUE);
-            header.getChildren().addAll(leftSide, rightSide);
-            
-            // Make left side take all available space to push right side to the end
-            HBox.setHgrow(leftSide, Priority.ALWAYS);
-            
-            // Set the header as the graphic for the TitledPane
+            header.getChildren().addAll(titleLabel, overallAttText, progressBar, percentLabel);
             coursePane.setGraphic(header);
 
-            // Set title text
-            String truncatedCourse = courseID.length() > 8 ? courseID.substring(0, 8) + "..." : courseID;
-            titleLabel.setText("Course ID: " + truncatedCourse);
-
-            // Create content grid
-            
+            // --- Create the GridPane for student cards ---
             GridPane studentsGrid = new GridPane();
             studentsGrid.setStyle("-fx-background-color: #D9D9D9;");
-            studentsGrid.setHgap(15);
-            studentsGrid.setVgap(15);
-            
+            studentsGrid.setHgap(10);
+            studentsGrid.setVgap(10);
             studentsGrid.setMaxWidth(Double.MAX_VALUE);
-            HBox.setHgrow(studentsGrid, Priority.ALWAYS);
-            
+
+            // Define 4 columns, each 25% of the GridPane width
+            if (studentsGrid.getColumnConstraints().isEmpty()) {
+                for (int i = 0; i < 4; i++) {
+                    ColumnConstraints col = new ColumnConstraints();
+                    col.setPercentWidth(25);
+                    col.setFillWidth(true);
+                    studentsGrid.getColumnConstraints().add(col);
+                }
+            }
+
+            // Fixed preferred width for each student card to allow text wrapping
+            final double fixedCardWidth = 130;
+
+            // Populate the grid with student cards
             List<Student> courseStudents = studentsByCourse.get(courseID);
             for (int j = 0; j < courseStudents.size(); j++) {
                 Student student = courseStudents.get(j);
 
+                // Create a VBox for each student's info (card)
                 VBox studentCard = new VBox();
+                studentCard.setStyle("-fx-background-radius: 20; -fx-background-color: #FFFFFF; -fx-padding: 20;");
+                studentCard.setPrefWidth(fixedCardWidth);
+                // Allow the card to fill its cell's width
+                studentCard.setMaxWidth(fixedCardWidth);
+
+                // Create a label for the student's name with wrapping enabled
                 Label studentName = new Label(student.getName());
-                
-                studentCard.setStyle("-fx-background-radius: 20;"
-                		+ "-fx-background-color: #FFFFFF;"
-                		+ "-fx-padding: 20");
+                studentName.setWrapText(true);
+                studentName.setMaxWidth(fixedCardWidth);
+
+                // Create a label for the student ID with wrapping enabled if needed
                 String studentIDString = student.getStudentID();
-                String truncatedID = studentIDString.length() > 12 ? studentIDString.substring(0, 12) + "..." : studentIDString;
+                String truncatedID = studentIDString.length() > 25
+                        ? studentIDString.substring(0, 25) + "..."
+                        : studentIDString;
                 Label studentID = new Label(truncatedID);
-                studentCard.setOnMouseClicked(event -> {
-                    handleStudentClick(studentIDString); // or pass in whatever you need
-                });
+                studentID.setWrapText(true);
+                studentID.setMaxWidth(fixedCardWidth);
+
+                // Calculate attendance percentage
                 double attendancePercentage = (dateRange != null && dateRange.size() == 2)
                         ? student.getAttendancePercentage(dateRange.get(0), dateRange.get(1))
                         : student.getAttendancePercentage(null, null);
-
-                courseAttendance += attendancePercentage;
-
                 Label attendance = new Label(Math.round(attendancePercentage * 10.0) / 10.0 + "%");
+
                 studentCard.getChildren().addAll(studentName, studentID, attendance);
 
+                // Add a click handler for the student card if needed
+                studentCard.setOnMouseClicked(event -> {
+                    handleStudentClick(studentIDString);
+                });
+
+                courseAttendance += attendancePercentage;
+                // Place the student card in the grid (4 columns per row)
                 studentsGrid.add(studentCard, j % 4, j / 4);
             }
-
+            
+            // Compute average attendance for the course and update the header labels
             courseAttendance = courseStudents.isEmpty() ? 0 : courseAttendance / courseStudents.size();
+            percentLabel.setText(Math.round(courseAttendance) + "%");
             progressBar.setProgress(courseAttendance / 100);
-            percentLabel.setText(Math.round(courseAttendance * 10.0) / 10.0 + "%");
 
+            // Set the GridPane as the content of the TitledPane and add to container
             coursePane.setContent(studentsGrid);
             coursesContainer.getChildren().add(coursePane);
 
-            // Scroll to bottom after each course is added
+            // Optionally scroll to the bottom after each course is added
             scrollablePane.setVvalue(1.0);
+            
+            
         }
     }
+
 	private void handleStudentClick(String studentIDString) {
 		// TODO Auto-generated method stub
 		userSession.setSelectedStudentId(studentIDString);
@@ -362,7 +396,7 @@ public class AttendanceAdminController {
                 if (fileName.endsWith(".csv")) {
                     selectedFile.set(file);
                 } else {
-                    System.out.println("Unsupported file format: " + fileName);
+                	UIServices.showAlert(AlertType.ERROR, "file error", "Unsopperted file format: " + db.getFiles().get(0).getName());
                 }
             }
         }
@@ -388,8 +422,9 @@ public class AttendanceAdminController {
         }
         if (dbHelper.checkUploadedFile(selectedFile.get(), currentAdmin.getManagedCourses()) ==1) {
 			dbHelper.uploadCSVtoDB(selectedFile.get());
+			selectedFile.set(null);
+			fileUploadOverlay.setVisible(false);
 		}
-        System.out.println(dbHelper.checkUploadedFile(selectedFile.get(), currentAdmin.getManagedCourses()));
         
 
     }

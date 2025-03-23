@@ -12,6 +12,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
@@ -38,6 +39,7 @@ public class AttendanceStudentController {
 	@FXML private Button editSelectionButton;
 	@FXML private Button applyButtonNewRecord;
 	@FXML private Button cancelButtonNewRecord;
+	@FXML private Button deleteRecordButton;
 	
 	@FXML private ProgressIndicator studentAttendancePercentageIndicator;
 			
@@ -110,13 +112,22 @@ public class AttendanceStudentController {
 		editableSessionsTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, selectedAttendance) -> {
 	        if (selectedAttendance != null) {
 	        	editSelectionButton.setDisable(false);
+	        	deleteRecordButton.setDisable(false);
 	            System.out.println("Selected session: " + selectedAttendance);
 	            
 	        }
 	        else {
+	        	deleteRecordButton.setDisable(true);
+
 	        	editSelectionButton.setDisable(true);
 			}
 	    });
+		
+		newSessionDate.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				applyButtonNewRecord.setDisable(false);
+			}
+		});
 		
 		studentNameField.setText(student.getName());
 		studentIDField.setText(" ("+student.getStudentID()+")");
@@ -233,6 +244,8 @@ public class AttendanceStudentController {
 		dbHelper.updateAttendanceForStudent(student, editableData);
 
 		initialize();
+        UIServices.showAlert(AlertType.CONFIRMATION, "Success!", "Changes saved");
+
 		System.out.println("changes saved");
 		attendanceEditOverlay.setVisible(false);
 
@@ -312,8 +325,10 @@ public class AttendanceStudentController {
 
         // Cancel button: just close the dialog.
         cancelButtonNewRecord.setOnAction(e -> addNewRecordOverlay.setVisible(false));
-
-        // Apply button: update the selected session and close the dialog.
+        if (newSessionDate.getValue() != null) {
+			applyButtonNewRecord.setDisable(false);
+		}
+        
         applyButtonNewRecord.setOnAction(e -> {
             // Update the session's date.
         	System.out.println("Test");

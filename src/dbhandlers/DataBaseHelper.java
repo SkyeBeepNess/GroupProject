@@ -20,8 +20,10 @@ import java.util.Map;
 import controllers.AttendanceStudentController;
 import controllers.AttendanceStudentController.StudentAttendance;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert.AlertType;
 import models.Admin;
 import models.Student;
+import services.UIServices;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -240,6 +242,7 @@ public class DataBaseHelper {
                 // Check that the line has exactly 4 columns
                 if (tokens.length != 4) {
                     System.err.println("Line " + lineNumber + " has " + tokens.length + " columns; expected 4.");
+                    UIServices.showAlert(AlertType.ERROR, "File import error", "Line " + lineNumber + " has " + tokens.length + " columns; expected 4.");
                     return 100;
                 }
                 
@@ -249,10 +252,12 @@ public class DataBaseHelper {
                 
                 if (studentID.isEmpty()) {
                     System.err.println("Line " + lineNumber + " has an empty Student ID.");
+                    UIServices.showAlert(AlertType.ERROR, "File import error", "Line " + lineNumber + " has an empty Student ID.");
                     return 101;
                 }
                 else if (managedStudents.contains(studentID) == false) {
                 	System.err.println("Line " + lineNumber + " has a wrong Student ID.");
+                    UIServices.showAlert(AlertType.ERROR, "File import error", "Line " + lineNumber + " has a wrong Student ID.");
                     return 101;
 				}
                 
@@ -260,10 +265,13 @@ public class DataBaseHelper {
                 String courseCode = tokens[1].trim();
                 if (courseCode.isEmpty()) {
                     System.err.println("Line " + lineNumber + " has an empty Course Code.");
+
+                    UIServices.showAlert(AlertType.ERROR, "File import error", "Line " + lineNumber + " has an empty Course Code.");
                     return 102;
                 }
                 else if (managedCourses.contains(courseCode) == false) {
                 	System.err.println("Line " + lineNumber + " has an wrong Course Code.");
+                    UIServices.showAlert(AlertType.ERROR, "File import error", "Line " + lineNumber + " has an wrong Course Code.");
                     return 102;
 				}
                 
@@ -273,6 +281,7 @@ public class DataBaseHelper {
                     LocalDate.parse(dateStr, dateFormatter);
                 } catch (DateTimeParseException e) {
                     System.err.println("Line " + lineNumber + " has an invalid date: " + dateStr);
+                    UIServices.showAlert(AlertType.ERROR, "File import error", "Line " + lineNumber + " has an invalid date: " + dateStr);
                     return 103;
                 }
                 
@@ -280,6 +289,7 @@ public class DataBaseHelper {
                 String attendanceStatus = tokens[3].trim();
                 if (!attendanceStatus.equalsIgnoreCase("Yes") && !attendanceStatus.equalsIgnoreCase("Late") && !attendanceStatus.equalsIgnoreCase("Absent")) {
                     System.err.println("Line " + lineNumber + " has an invalid attendance status: " + attendanceStatus);
+                    UIServices.showAlert(AlertType.ERROR, "File import error", "Line " + lineNumber + " has an invalid attendance status: " + attendanceStatus);
                     return 103;
                 }
                 
@@ -288,6 +298,7 @@ public class DataBaseHelper {
             
             if (!foundData) {
                 System.err.println("The file is empty.");
+                UIServices.showAlert(AlertType.ERROR, "File import error", "The file is empty.");
                 return 0;
             }
             
@@ -326,6 +337,7 @@ public class DataBaseHelper {
                 stmt.executeBatch();
                 connection.commit();
                 System.out.println("Inserted " + count + " rows.");
+                UIServices.showAlert(AlertType.CONFIRMATION, "Success!", "CSV file is successfully uploaded");
             } catch (IOException ex) {
                 System.err.println("Error reading CSV file");
                 ex.printStackTrace();
