@@ -37,7 +37,6 @@
 		</children>
 	</AnchorPane>
 
-	<!-- ScrollPane для прокрутки -->
 	<ScrollPane fitToWidth="true" layoutX="0.0" layoutY="50.0" prefHeight="350.0" prefWidth="600.0" style="-fx-background-color: #ECECEC;">
 		<content>
 			<VBox prefWidth="600.0" spacing="10">
@@ -46,7 +45,7 @@
 				</padding>
 				<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" prefHeight="32.0" prefWidth="600.0">
 					<children>
-						<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Application ID">
+						<Text fx:id="applicationIdField" strokeType="OUTSIDE" strokeWidth="0.0" text="New Application">
 							<font>
 								<Font name="Segoe UI" size="18.0" />
 							</font>
@@ -71,39 +70,39 @@
 						<VBox fx:id="personalDetailsVbox" managed="false" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" visible="false">
 							<Label text="First Name:">
 								<font>
-									<Font name="Segoe UI Black" size="12.0" />
+									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</Label>
 							<TextField fx:id="firstNameField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
 
 							<Label text="Last Name:">
 								<font>
-									<Font name="Segoe UI Black" size="12.0" />
+									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</Label>
 							<TextField fx:id="lastNameField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
 
 							<Label text="Nationality:">
 								<font>
-									<Font name="Segoe UI Black" size="12.0" />
+									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</Label>
 							<TextField fx:id="nationalityField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
 
 							<Label text="Date of Birth:">
 								<font>
-									<Font name="Segoe UI Black" size="14.0" />
+									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</Label>
 							<DatePicker fx:id="dobPicker" prefWidth="200.0" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
-							<Label text="Passport File:" />
-                     <VBox fx:id="selectedPassportBox" prefWidth="100.0">
+							<Label text="Passport File:">
+							<font>
+									<Font name="Segoe UI" size="14.0" />
+								</font>
+							</Label>	
+                     <VBox fx:id="selectedPassportBox" prefWidth="100.0" visible="false" managed="false">
                         <children>
-                           <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Selected file:">
-                              <font>
-                                 <Font name="Segoe UI" size="14.0" />
-                              </font>
-                           </Text>
+                           
                            <HBox alignment="CENTER" prefWidth="200.0" style="-fx-background-color: #EDEBEB; -fx-background-radius: 20;">
                               <children>
                                  <ImageView fitHeight="31.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
@@ -118,7 +117,7 @@
                                              <Font name="Segoe UI" size="12.0" />
                                           </font>
                                        </Text>
-                                       <Text fx:id="paasportFileSize" fill="#5f5f5f" strokeType="OUTSIDE" strokeWidth="0.0" text="Size: 0 mb">
+                                       <Text fx:id="passportFileSize" fill="#5f5f5f" strokeType="OUTSIDE" strokeWidth="0.0" text="Size: 0 mb">
                                           <font>
                                              <Font name="Segoe UI" size="11.0" />
                                           </font>
@@ -151,7 +150,7 @@
                      </VBox>
 							<Label fx:id="passportDropArea" onDragDropped="#handleDropPassport" onDragOver="#handleDragOverPassport" onMouseClicked="#uploadPassport" prefHeight="150.0" prefWidth="300.0" style="-fx-background-color: #ECECEC; -fx-padding: 10; -fx-alignment: center; -fx-background-radius: 25;">
 								<font>
-									<Font name="Segoe UI Black" size="12.0" />
+									<Font name="Segoe UI" size="14.0" />
 								</font>
                         <graphic>
                            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
@@ -181,7 +180,7 @@
 							</Label>
 							<TextField fx:id="passportField" editable="false" visible="false">
 								<font>
-									<Font name="Segoe UI Black" size="12.0" />
+									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</TextField>
 							<Button fx:id="savePDButton" alignment="CENTER_RIGHT" onAction="#savePersonalDetails" style="-fx-background-color: #65558F; -fx-text-fill: white; -fx-background-radius: 25;" text="Save" />
@@ -201,32 +200,74 @@
 						<VBox fx:id="academicalQualificationVbox" managed="false" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" visible="false">
 							<Label text="Diploma name of the highest level of education obtained:">
 								<font>
-									<Font name="Segoe UI Black" size="14.0" />
+									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</Label>
 							<TextField fx:id="certificateField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
 							<Label text="Name of school/university:">
 								<font>
-									<Font name="Segoe UI Black" size="14.0" />
+									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</Label>
 							<TextField fx:id="institutionField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
 							<Label text="Grade:">
 								<font>
-									<Font name="Segoe UI Black" size="14.0" />
+									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</Label>
 							<TextField fx:id="gradeField" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
 							<Label text="Date of completion:">
 								<font>
-									<Font name="Segoe UI Black" size="14.0" />
+									<Font name="Segoe UI" size="14.0" />
 								</font>
 							</Label>
 							<DatePicker fx:id="docPicker" prefWidth="200.0" style="-fx-background-color: #ECECEC; -fx-background-radius: 25;" />
-							<Label text="Diploma File:" />
+							<Label text="Diploma File:">
+								<font>
+									<Font name="Segoe UI" size="14.0" />
+								</font>
+							</Label>	
+							<VBox fx:id="selectedDiplomaBox" prefWidth="100.0" visible="false" managed="false">
+    							<children>
+        							<HBox alignment="CENTER" prefWidth="200.0" style="-fx-background-color: #EDEBEB; -fx-background-radius: 20;">
+            							<children>
+                							<ImageView fitHeight="31.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                    							<image>
+                        							<Image url="@../img/file.png" />
+                    							</image>
+                							</ImageView>
+                							<VBox prefWidth="100.0">
+                    							<children>
+                        							<Text fx:id="diplomaFileName" strokeType="OUTSIDE" strokeWidth="0.0" text="File name">
+                            							<font><Font name="Segoe UI" size="12.0" /></font>
+                        							</Text>
+                      				  				<Text fx:id="diplomaFileSize" fill="#5f5f5f" strokeType="OUTSIDE" strokeWidth="0.0" text="Size: 0 mb">
+                            							<font><Font name="Segoe UI" size="11.0" /></font>
+                        							</Text>
+                        							<Hyperlink onAction="#onDiplomaViewFileClicked" text="View" underline="true">
+                			            				<font><Font name="Segoe UI" size="13.0" /></font>
+                        							</Hyperlink>
+                   								</children>
+                    							<HBox.margin><Insets left="3.0" right="3.0" /></HBox.margin>
+                							</VBox>
+                							<Button mnemonicParsing="false" onAction="#onDeleteDiplomaClicked" style="-fx-background-color: transparent;">
+               					     			<graphic>
+                        							<ImageView fitHeight="31.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                   						         		<image>
+                                							<Image url="@../img/trash.png" />
+                      	      							</image>
+                        							</ImageView>
+                 				  				</graphic>
+               				 				</Button>
+            							</children>
+            						<padding><Insets bottom="9.0" left="9.0" right="9.0" top="9.0" /></padding>
+        						</HBox>
+    						</children>
+						</VBox>
+							
                      <Label fx:id="diplomaDropArea" onDragDropped="#handleDropDiploma" onDragOver="#handleDragOverDiploma" onMouseClicked="#uploadDiploma" prefHeight="150.0" prefWidth="300.0" style="-fx-background-color: #ECECEC; -fx-padding: 10; -fx-alignment: center; -fx-background-radius: 25;">
                         <font>
-                           <Font name="Segoe UI Black" size="12.0" />
+                           <Font name="Segoe UI" size="12.0" />
                         </font>
                         <graphic>
                            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
