@@ -86,6 +86,7 @@ public class ApplicantDetailsController {
 	@FXML private VBox selectedDiplomaBox;
 	@FXML private Text diplomaFileName;
 	@FXML private Text diplomaFileSize;
+	@FXML private Button submitButton;
 
 
     @FXML
@@ -147,6 +148,8 @@ public class ApplicantDetailsController {
     	});
 
         if (isAdminView) {
+        	submitButton.setVisible(false);
+        	submitButton.setManaged(false);
         	profileDropArea.setVisible(false);
         	profileDropArea.setManaged(false);
         	updateProfPicButton.setVisible(false);
@@ -164,6 +167,9 @@ public class ApplicantDetailsController {
             
         } else if ("applicant".equals(role)) {
             currentApplicant = applicantDAO.getApplicantByUserId(session.getUserId());
+            if (currentApplicant.getStatus() == "Submitted") {
+            	disableEditing();
+            }
         } else {
         	System.out.println("No active application");
         }
@@ -246,7 +252,18 @@ public class ApplicantDetailsController {
         );
         File file = chooser.showOpenDialog(null);
         if (file != null) {
-        	profileManager.setImageFromFile(file);
+        	Image image = new Image(file.toURI().toString());
+        	double width = image.getWidth();
+            double height = image.getHeight();
+            
+            System.out.println("Width: " + width + ", Height: " + height);
+            
+            if (width > 300 || height > 500) {
+            	UIServices.showAlert(AlertType.ERROR, "Invalid Image Dimensions", "Maximum allowed size is 300x500 pixels.");
+            }
+            else {
+            	profileManager.setImageFromFile(file);
+            }
         }
     }
     
@@ -268,7 +285,13 @@ public class ApplicantDetailsController {
         Dragboard db = event.getDragboard();
         if (db.hasFiles()) {
         	File file = db.getFiles().get(0);
-        	profileManager.setImageFromFile(file);
+        	String fileName = file.getName().toLowerCase();
+            if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png")) {
+            	profileManager.setImageFromFile(file);
+            } else {
+                UIServices.showAlert(AlertType.ERROR, "Unsupported File Type", "Only JPG and PNG files are allowed.");
+            }
+        	
         }
         event.setDropCompleted(true);
         event.consume();
@@ -483,10 +506,15 @@ public class ApplicantDetailsController {
                 UIServices.showAlert(AlertType.ERROR, "File Import Error", "Please select only one file");
             } else {
                 File file = db.getFiles().get(0);
-                if (isPassport) {
-                    selectedPassportFile.set(file);
+                String fileName = file.getName().toLowerCase();
+                if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png") || fileName.endsWith(".pdf")) {
+                    if (isPassport) {
+                        selectedPassportFile.set(file);
+                    } else {
+                        selectedDiplomaFile.set(file);
+                    }
                 } else {
-                    selectedDiplomaFile.set(file);
+                    UIServices.showAlert(AlertType.ERROR, "Unsupported File Type", "Only JPG, PNG, and PDF files are allowed.");
                 }
             }
         }
@@ -552,23 +580,6 @@ public class ApplicantDetailsController {
         }
     }
 
-    public String encodeImageToBase64(File imageFile) {
-        try (FileInputStream fis = new FileInputStream(imageFile)) {
-            byte[] bytes = fis.readAllBytes();
-            return Base64.getEncoder().encodeToString(bytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
-
-    public Image decodeBase64ToImage(String base64) {
-    	if (base64 == null || base64.isBlank()) return null;
-    	byte[] imageBytes = Base64.getDecoder().decode(base64);
-    	return new Image(new ByteArrayInputStream(imageBytes));
-    }
-    
     @FXML
     private void onDeletePassportClicked() {
     	selectedPassportFile.set(null);
@@ -585,6 +596,31 @@ public class ApplicantDetailsController {
     	selectedPassportFile.set(null);
     	selectedDiplomaFile.set(null);
     	NavigationService.navigateTo("loginPage.fxml", "Login");
+    }
+    
+    @FXML
+    private void onSubmitClicked() {
+    	boolean profilePictureSet = currentApplicant.getProfilePicture() != null;
+    	
+    	boolean personalComplete = !firstNameField.getText().trim().isEmpty() &&
+                !nationalityField.getText().trim().isEmpty() &&
+                dobPicker.getValue() != null && selectedPassportFile.get() != null;
+
+    	boolean academicComplete = !certificateField.getText().trim().isEmpty() &&
+                !institutionField.getText().trim().isEmpty() &&
+                docPicker.getValue() != null && selectedDiplomaFile.get() != null;
+    	
+    	if (profilePictureSet && personalComplete && academicComplete) {
+    		saveAcademicQualification();
+    		savePersonalDetails();
+    		currentApplicant.setStatus("Submitted");
+    		disableEditing();
+    		UIServices.showAlert(AlertType.INFORMATION, "Success", "Application submitted successfully!");
+    	}
+    	else {
+    		UIServices.showAlert(AlertType.ERROR, "Error", "Please fill all fields!");
+    	}
+    	
     }
 
 }

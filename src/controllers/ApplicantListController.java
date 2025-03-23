@@ -228,8 +228,12 @@ public class ApplicantListController {
             return;
         }
 
-        DataBaseManager.loadApplicantsFromCSV(selectedFile.get().getAbsolutePath());
-        cancelCSVImport();
+        boolean success = DataBaseManager.loadApplicantsFromCSV(selectedFile.get().getAbsolutePath());
+        if (success) {
+        	cancelCSVImport();
+        	toFilterUKPRN = toFilterUKPRN == null || toFilterUKPRN.isEmpty() ? ukprns : toFilterUKPRN;
+            loadApplicants(stDate, enDate, toFilterUKPRN, searchInput);
+        }
     }
 
     
@@ -283,7 +287,7 @@ public class ApplicantListController {
     	toFilterUKPRN = getSelectedUkprns();
     	System.out.println(toFilterUKPRN);
     	System.out.println(searchInput);
-    	
+    	toFilterUKPRN = toFilterUKPRN == null || toFilterUKPRN.isEmpty() ? ukprns : toFilterUKPRN;
     	loadApplicants(stDate, enDate, toFilterUKPRN, searchInput);
     	filterOverlay.setVisible(false);    	
     }
@@ -296,7 +300,17 @@ public class ApplicantListController {
     }
     
     @FXML
-    private void onRejectClicked() {}
+    private void onRejectClicked() {
+    	Applicant selectedApplicant = applicantTable.getSelectionModel().getSelectedItem();
+    	if (selectedApplicant != null) {
+            boolean success = applicantDAO.updateApplicantStatus(selectedApplicant.getUserId(), "Rejected");
+            if (success) {
+                selectedApplicant.setStatus("Rejected");
+                applicantTable.refresh();
+            }
+        }
+            
+    }
     
     @FXML
     private void viewApplicantDetails() {
@@ -309,7 +323,14 @@ public class ApplicantListController {
     }
     
     @FXML
-    private void onAcceptClicked() {}
+    private void onAcceptClicked() {
+    	Applicant selectedApplicant = applicantTable.getSelectionModel().getSelectedItem();
+    	boolean success = applicantDAO.updateApplicantStatus(selectedApplicant.getUserId(), "Accepted");
+        if (success) {
+            selectedApplicant.setStatus("Accepted");
+            applicantTable.refresh();
+        }
+    }
     
     @FXML
     private void onLogOutClicked() {

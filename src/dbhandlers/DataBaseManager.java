@@ -12,7 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import javafx.scene.control.Alert.AlertType;
 import models.Admin;
+import services.UIServices;
 
 public class DataBaseManager {
 
@@ -129,16 +131,34 @@ public class DataBaseManager {
         return newUserId;
     }
     
-    public static void loadApplicantsFromCSV(String csvFilePath) {
+    public static boolean loadApplicantsFromCSV(String csvFilePath) {
         String insertApplicantSQL = "INSERT INTO applicants (\"Applicant Name\", \"Date of Application\", \"Certificate\", \"Grade\", \"UKPRN\", \"ApplicationID\", \"Status\", \"UserID\") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
+        UserSession session = UserSession.getInstance();
         try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath));
              PreparedStatement pstmtApplicant = connection.prepareStatement(insertApplicantSQL)) {
 
             connection.setAutoCommit(false);
             Random random = new Random();
             String line;
+            if ((line = br.readLine()) != null) {
+            	line = line.replace("\uFEFF", "").trim();
+            	System.out.println("CSV Header: " + line);
+            	String[] expectedHeaders = {"Applicant Name", "Date of Application", "Certificate", "Grade"};
+            	String[] colNames = line.split(",");
 
+            	if (colNames.length < expectedHeaders.length) {
+            	    UIServices.showAlert(AlertType.ERROR, "File import error", "File must contain the 4 required columns.");
+            	    return false;
+            	}
+
+            	for (int i = 0; i < expectedHeaders.length; i++) {
+            	    String actual = colNames[i].trim().replaceAll("\"", "");
+            	    if (!actual.equalsIgnoreCase(expectedHeaders[i])) {
+            	        UIServices.showAlert(AlertType.ERROR, "File import error", "Missing or incorrect column: " + expectedHeaders[i]);
+            	        return false;
+            	    }
+            	}
+            }
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
 
@@ -149,7 +169,7 @@ public class DataBaseManager {
                 String certificate = values[2].trim();
                 String grade = values[3].trim();
 
-                int ukprn = getRandomUKPRN(random);
+                String ukprn = getAdminUKPRNbyUserID(UserSession.getInstance().getUserId(), UserSession.getInstance().getRole()).get(0);
 
                 String applicationID = ukprn + String.valueOf(100000 + random.nextInt(900000));
 
@@ -161,7 +181,7 @@ public class DataBaseManager {
                 pstmtApplicant.setString(2, dateOfApplication);
                 pstmtApplicant.setString(3, certificate);
                 pstmtApplicant.setString(4, grade);
-                pstmtApplicant.setInt(5, ukprn);
+                pstmtApplicant.setString(5, ukprn);
                 pstmtApplicant.setString(6, applicationID);
                 pstmtApplicant.setString(7, status);
                 pstmtApplicant.setString(8, userID);
@@ -182,10 +202,12 @@ public class DataBaseManager {
             generateUniqueUsernamesAndInsertApplicantsIntoUsers();
 
             System.out.println("Data base updated!");
+            return true;
 
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     private static void generateUniqueUsernamesAndInsertApplicantsIntoUsers() throws SQLException {
