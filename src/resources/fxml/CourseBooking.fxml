@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="courseSelection.src.courseselection.CourseBookingController"
+      spacing="10" padding="15.0 15.0 15.0 15.0">
+
+    <Label text="Available Courses:" />
+    <ListView fx:id="courseListView" prefHeight="150" />
+
+    <Label text="Select Entry Exam Date:" />
+    <DatePicker fx:id="examDatePicker" />
+
+    <Label text="Select Career Interview Date:" />
+    <DatePicker fx:id="interviewDatePicker" />
+
+    <Button text="Book Appointment" onAction="#bookAppointment" />
+
+    <Label text="Search by Booking ID:" />
+    <TextField fx:id="bookingIdField" />
+    <Button text="Search Booking" onAction="#searchBooking" />
+
+</VBox>

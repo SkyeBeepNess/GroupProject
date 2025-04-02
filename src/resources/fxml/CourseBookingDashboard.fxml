@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="591.0" prefWidth="600.0" style="-fx-background-color: D9D9D9;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="courseSelection.src.courseselection.CourseDashboardController">
+   <children>
+      <HBox prefHeight="60.0" prefWidth="600.0" style="-fx-background-color: #6A538A;">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" textFill="#f7f7f7">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="445.0" style="-fx-background-color: transparent; -fx-padding: 20 10 20 10;" text="UMS - Course Booking Dashboard" textFill="#f7f7f7">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <TextField fx:id="searchField" layoutX="44.0" layoutY="81.0" onAction="#searchCourses" prefHeight="38.0" prefWidth="343.0" promptText="Search courses or IDs" style="-fx-background-color: D0BCFF; -fx-background-radius: 15; -fx-padding: 10;" text="Search courses" />
+      <ScrollPane layoutX="44.0" layoutY="127.0" prefHeight="240.0" prefWidth="490.0">
+         <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="255.0" prefWidth="510.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="4.0" prefHeight="18.0" prefWidth="116.0" text="Available Courses" textFill="#0b0b0b" />
+                  <ListView fx:id="courseListView" layoutX="7.0" layoutY="22.0" prefHeight="200.0" prefWidth="471.0" />
+               </children>
+            </AnchorPane>
+         </content>
+      </ScrollPane>
+      <Label layoutX="44.0" layoutY="394.0" prefHeight="27.0" prefWidth="134.0" style="-fx-background-color: Transparent;" text="Select Exam Date" textFill="#232121" />
+      <DatePicker fx:id="examDatePicker" layoutX="178.0" layoutY="395.0" />
+      <Label layoutX="44.0" layoutY="429.0" prefHeight="27.0" prefWidth="134.0" style="-fx-background-color: Transparent;" text="Select Interview Date" textFill="#232121" />
+      <DatePicker fx:id="interviewDatePicker" layoutX="178.0" layoutY="430.0" />
+      <Button fx:id="bookBtn" layoutX="44.0" layoutY="477.0" mnemonicParsing="false" onAction="#bookAppointment" prefHeight="26.0" prefWidth="316.0" text="Book Appointment" />
+      <Button fx:id="updateBtn" layoutX="44.0" layoutY="516.0" mnemonicParsing="false" onAction="#updateBooking" prefHeight="26.0" prefWidth="316.0" text="Update Booking" />
+      <Button fx:id="cancelBtn" layoutX="44.0" layoutY="552.0" mnemonicParsing="false" onAction="#cancelBooking" prefHeight="26.0" prefWidth="316.0" text="Cancel Booking" />
+      <HBox layoutX="166.0" layoutY="88.0" />
+      <Button fx:id="viewBookingButton" layoutX="414.0" layoutY="499.0" mnemonicParsing="false" onAction="#viewBooking" prefHeight="60.0" prefWidth="134.0" style="-fx-background-color: D0BCFF; -fx-background-radius: 15;" text="View My Booking" />
+   </children>
+</AnchorPane>
